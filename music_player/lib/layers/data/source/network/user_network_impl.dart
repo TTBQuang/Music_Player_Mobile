@@ -39,7 +39,7 @@ class UserNetworkImpl implements UserNetwork {
       throw Exception(Strings.cannotConnectServer);
     } on TimeoutException {
       // Handle timeout errors
-      throw Exception(Strings.cannotConnectServer);
+      throw Exception(Strings.timeout);
     }
   }
 

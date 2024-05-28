@@ -87,7 +87,6 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.blue,
           hintColor: Colors.blueAccent,
         ),
-        //home: const LoginScreen(),
         home: const InitialScreen(),
       ),
     );
