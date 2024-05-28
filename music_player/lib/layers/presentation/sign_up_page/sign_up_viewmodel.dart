@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:music_player/layers/domain/usecase/register_user.dart';
+import 'package:music_player/layers/domain/repository/user_repository.dart';
 import 'package:music_player/utils/error_message_extension.dart';
 
 class SignUpViewModel extends ChangeNotifier{
-  final RegisterUser _registerUser;
+  final UserRepository userRepository;
 
   String errorMessage = '';
 
-  SignUpViewModel(this._registerUser);
+  SignUpViewModel(this.userRepository);
 
-  Future<void> registerUser(String username, String password) async {
+  Future<bool> registerUser(String username, String password) async {
     try {
-      await _registerUser(username, password);
+      await userRepository.registerUser(username, password);
       errorMessage = '';
       notifyListeners();
+      return true;
     } catch (e) {
       errorMessage = e.toString().extractErrorMessage();
       notifyListeners();
+      return false;
     }
   }
 }

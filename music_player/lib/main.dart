@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:music_player/layers/domain/usecase/register_user.dart';
-import 'package:music_player/layers/presentation/login_page/screen.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:music_player/layers/data/source/local/user_local_storage_impl.dart';
+import 'package:music_player/layers/presentation/login_page/login_screen.dart';
+import 'package:music_player/layers/presentation/login_page/login_viewmodel.dart';
+import 'package:music_player/layers/presentation/main_page/main_viewmodel.dart';
+import 'package:music_player/layers/presentation/initial_screen/initial_screen.dart';
 import 'package:music_player/utils/size_config.dart';
 import 'package:provider/provider.dart';
 
 import 'layers/data/repository/user_repository_impl.dart';
-import 'layers/data/source/network/user_service.dart';
+import 'layers/data/source/network/user_network_impl.dart';
 import 'layers/presentation/sign_up_page/sign_up_viewmodel.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setPreferredOrientations([
@@ -30,18 +34,34 @@ void main() {
   // await player.play(UrlSource(url));
 
   // Initialize dependencies
-  final userService = UserService();
-  final userRepository = UserRepositoryImpl(userService);
-  final registerUser = RegisterUser(userRepository);
-  final signUpViewModel = SignUpViewModel(registerUser);
+  const storage = FlutterSecureStorage();
+  final userLocalStorage = UserLocalStorageImpl(storage);
 
-  runApp(MyApp(signUpViewModel: signUpViewModel));
+  final userService = UserNetworkImpl();
+
+  final userRepository = UserRepositoryImpl(userService, userLocalStorage);
+
+  final signUpViewModel = SignUpViewModel(userRepository);
+  final loginViewModel = LoginViewModel(userRepository);
+  final mainViewModel = MainViewModel(userRepository);
+
+  runApp(MyApp(
+    signUpViewModel: signUpViewModel,
+    loginViewModel: loginViewModel,
+    mainViewModel: mainViewModel,
+  ));
 }
 
 class MyApp extends StatelessWidget {
   final SignUpViewModel signUpViewModel;
+  final LoginViewModel loginViewModel;
+  final MainViewModel mainViewModel;
 
-  MyApp({required this.signUpViewModel});
+  MyApp(
+      {super.key,
+      required this.signUpViewModel,
+      required this.loginViewModel,
+      required this.mainViewModel});
 
   final SizeConfig sizeConfig = SizeConfig();
 
@@ -52,15 +72,23 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<SignUpViewModel>.value(value: signUpViewModel),
+        ChangeNotifierProvider<LoginViewModel>.value(value: loginViewModel),
+        ChangeNotifierProvider<MainViewModel>.value(value: mainViewModel),
       ],
       child: MaterialApp(
-        title: 'Your App Title',
+        title: 'Music Player',
         theme: ThemeData(
           // Define your theme here
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: const LoginScreen(),
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          primaryColor: Colors.blue,
+          hintColor: Colors.blueAccent,
+        ),
+        //home: const LoginScreen(),
+        home: const InitialScreen(),
       ),
     );
   }

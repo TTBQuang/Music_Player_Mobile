@@ -1,8 +1,13 @@
-class User{
+class User {
   int id;
   String username;
-  String password;
-  String? displayName;
+  String displayName;
+  String authority;
 
-  User(this.id, this.username, this.password, this.displayName);
+  User({
+    required this.id,
+    required this.username,
+    required this.displayName,
+    required this.authority,
+  });
 }

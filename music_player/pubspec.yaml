@@ -38,6 +38,8 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   provider: ^6.1.2
   http: ^1.2.1
+  fluttertoast: ^8.2.5
+  flutter_secure_storage: ^9.2.2
   # firebase
   firebase_core: ^2.31.0
   firebase_storage: ^11.7.5
