@@ -19,6 +19,14 @@ class Strings {
   static const String home = 'Trang chủ';
   static const String library = 'Thư viện';
   static const String loseNetworkConnection = 'Mất kết nối internet';
+  static const String update = 'Cập nhật';
+  static const String displayName = 'Tên hiển thị';
+  static const String updateFail = 'Cập nhật thất bại';
+  static const String newRelease = 'Mới phát hành';
+  static const String listenRecently = 'Nghe gần đây';
+  static const String popular = 'Nổi bật';
+  static const String genre = 'Thể loại';
+  static const String singer = 'Nghệ sĩ';
 
   static const String usernameKey = "USERNAME";
   static const String passwordKey = "PASSWORD";

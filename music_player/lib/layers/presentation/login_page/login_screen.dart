@@ -10,10 +10,10 @@ import 'package:provider/provider.dart';
 import '../../domain/entity/user.dart';
 
 class LoginScreen extends StatefulWidget {
-  static Route<void> route({required bool popToPreviousScreen}) {
+  static Route<void> route({required bool canNavigateBack}) {
     return MaterialPageRoute(
       builder: (context) {
-        return LoginScreen(canPop: popToPreviousScreen);
+        return LoginScreen(canPop: canNavigateBack);
       },
     );
   }

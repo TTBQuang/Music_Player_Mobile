@@ -35,13 +35,13 @@ class _InitialScreenState extends State<InitialScreen> {
             );
           } else {
             Navigator.of(context).pushReplacement(
-              LoginScreen.route(popToPreviousScreen: false),
+              LoginScreen.route(canNavigateBack: false),
             );
           }
         });
       } else {
         Navigator.of(context).pushReplacement(
-          LoginScreen.route(popToPreviousScreen: false),
+          LoginScreen.route(canNavigateBack: false),
         );
       }
     });

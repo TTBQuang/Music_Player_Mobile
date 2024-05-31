@@ -6,4 +6,5 @@ abstract class UserRepository{
   Future<void> saveCredentials(String username, String password);
   Future<Map<String, String?>> getCredentials();
   Future<void> deleteCredentials();
+  Future<bool> updateUser(User user);
 }

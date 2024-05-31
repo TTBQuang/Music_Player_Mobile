@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:music_player/layers/data/repository/playlist_repository_impl.dart';
+import 'package:music_player/layers/data/repository/song_repository_impl.dart';
 import 'package:music_player/layers/data/source/local/user_local_storage_impl.dart';
+import 'package:music_player/layers/data/source/network/playlist_network_impl.dart';
+import 'package:music_player/layers/data/source/network/song_network_impl.dart';
 import 'package:music_player/layers/presentation/login_page/login_screen.dart';
 import 'package:music_player/layers/presentation/login_page/login_viewmodel.dart';
 import 'package:music_player/layers/presentation/main_page/main_viewmodel.dart';
@@ -37,13 +41,20 @@ Future<void> main() async {
   const storage = FlutterSecureStorage();
   final userLocalStorage = UserLocalStorageImpl(storage);
 
-  final userService = UserNetworkImpl();
+  final userNetwork = UserNetworkImpl();
 
-  final userRepository = UserRepositoryImpl(userService, userLocalStorage);
+  final userRepository = UserRepositoryImpl(userNetwork, userLocalStorage);
+  final songNetwork = SongNetworkImpl();
+  final songRepository = SongRepositoryImpl(songNetwork);
+  final playlistNetwork = PlaylistNetworkImpl();
+  final playlistRepository = PlaylistRepositoryImpl(playlistNetwork);
 
   final signUpViewModel = SignUpViewModel(userRepository);
   final loginViewModel = LoginViewModel(userRepository);
-  final mainViewModel = MainViewModel(userRepository);
+  final mainViewModel = MainViewModel(
+      userRepository: userRepository,
+      songRepository: songRepository,
+      playlistRepository: playlistRepository);
 
   runApp(MyApp(
     signUpViewModel: signUpViewModel,

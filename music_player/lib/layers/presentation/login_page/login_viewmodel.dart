@@ -5,16 +5,16 @@ import 'package:music_player/utils/error_message_extension.dart';
 import '../../domain/entity/user.dart';
 
 class LoginViewModel extends ChangeNotifier {
-  final UserRepository userRepository;
+  final UserRepository _userRepository;
 
   String errorMessage = '';
   User? user;
 
-  LoginViewModel(this.userRepository);
+  LoginViewModel(this._userRepository);
 
   Future<User?> login(String username, String password) async {
     try {
-      user = await userRepository.login(username, password);
+      user = await _userRepository.login(username, password);
       errorMessage = '';
       notifyListeners();
       return user;
@@ -26,10 +26,10 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<void> saveCredentials(String username, String password) async {
-    userRepository.saveCredentials(username, password);
+    _userRepository.saveCredentials(username, password);
   }
 
   Future<Map<String, String?>> getCredentials() async{
-    return userRepository.getCredentials();
+    return _userRepository.getCredentials();
   }
 }

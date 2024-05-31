@@ -1,5 +1,9 @@
-import 'package:music_player/layers/domain/entity/music_item.dart';
+import 'package:music_player/layers/domain/entity/song.dart';
 
-class Playlist extends MusicItem{
+class Playlist {
+  int id;
+  String name;
+  String image;
 
+  Playlist({required this.id, required this.name, required this.image});
 }

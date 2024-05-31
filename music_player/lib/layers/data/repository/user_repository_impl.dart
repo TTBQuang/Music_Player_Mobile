@@ -34,4 +34,9 @@ class UserRepositoryImpl extends UserRepository{
   Future<void> deleteCredentials() async {
     userLocalStorage.deleteCredentials();
   }
+
+  @override
+  Future<bool> updateUser(User user) async {
+    return userNetwork.updateUser(user);
+  }
 }
