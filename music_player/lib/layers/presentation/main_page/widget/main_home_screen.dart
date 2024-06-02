@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_player/layers/presentation/login_page/login_viewmodel.dart';
+import 'package:music_player/layers/presentation/playlist_detail/playlist_detail_screen.dart';
 import 'package:music_player/utils/constants.dart';
 import 'package:music_player/utils/size_config.dart';
 import 'package:music_player/utils/strings.dart';
@@ -24,26 +25,28 @@ class MainHomeScreen extends StatelessWidget {
           child: SingleChildScrollView(
         child: Column(
           children: [
-            _buildList(Strings.newRelease,
-                mainViewModel.getNewSongs(0, Constants.pageSize)),
+            _buildList(context, Strings.newRelease,
+                mainViewModel.getNewSongs(0, Constants.pageSizeMainHomeView)),
             if (user != null)
               _buildList(
+                  context,
                   Strings.listenRecently,
                   mainViewModel.getRecentListenSongs(
-                      user.id, 0, Constants.pageSize)),
-            _buildList(Strings.popular,
-                mainViewModel.getPopularSongs(0, Constants.pageSize)),
-            _buildList(Strings.genre,
-                mainViewModel.getGenrePlaylist(0, Constants.pageSize)),
-            _buildList(Strings.singer,
-                mainViewModel.genSingerPlaylist(0, Constants.pageSize)),
+                      user.id, 0, Constants.pageSizeMainHomeView)),
+            _buildList(context, Strings.popular,
+                mainViewModel.getPopularSongs(0, Constants.pageSizeMainHomeView)),
+            _buildList(context, Strings.genre,
+                mainViewModel.getGenrePlaylist(0, Constants.pageSizeMainHomeView)),
+            _buildList(context, Strings.singer,
+                mainViewModel.genSingerPlaylist(0, Constants.pageSizeMainHomeView)),
           ],
         ),
       )),
     );
   }
 
-  Widget _buildList(String title, Future<List<dynamic>> futureItems) {
+  Widget _buildList(
+      BuildContext context, String title, Future<List<dynamic>> futureItems) {
     return FutureBuilder<List<dynamic>>(
       future: futureItems,
       builder: (context, snapshot) {
@@ -61,9 +64,7 @@ class MainHomeScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 10, left: 10),
                 child: InkWell(
-                  onTap: () {
-                    print('Title clicked: $title');
-                  },
+                  onTap: () {},
                   borderRadius: BorderRadius.circular(0),
                   child: Row(
                     children: [
@@ -92,12 +93,12 @@ class MainHomeScreen extends StatelessWidget {
                       if (item is Song) {
                         return Padding(
                           padding: const EdgeInsets.only(right: 10),
-                          child: buildSongItem(item),
+                          child: buildSongItem(context, item),
                         );
                       } else if (item is Playlist) {
                         return Padding(
                           padding: const EdgeInsets.only(right: 10),
-                          child: buildPlaylistItem(item),
+                          child: buildPlaylistItem(context, item),
                         );
                       }
                       return null;
@@ -112,59 +113,67 @@ class MainHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget buildSongItem(Song item) {
-    return Column(
-      children: [
-        Image.network(
-          item.image,
-          width: 150,
-          height: 150,
-          fit: BoxFit.cover,
-        ),
-        SizedBox(
-          height: 5.h,
-        ),
-        SizedBox(
-          width: 150,
-          child: Text(
-            item.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 10.w,
-            ),
+  Widget buildSongItem(BuildContext context, Song item) {
+    return InkWell(
+      onTap: () {},
+      child: Column(
+        children: [
+          Image.network(
+            item.image,
+            width: 150,
+            height: 150,
+            fit: BoxFit.cover,
           ),
-        )
-      ],
+          SizedBox(
+            height: 5.h,
+          ),
+          SizedBox(
+            width: 150,
+            child: Text(
+              item.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 10.w,
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 
-  Widget buildPlaylistItem(Playlist item) {
-    return Column(
-      children: [
-        Image.network(
-          item.image,
-          width: 150,
-          height: 150,
-          fit: BoxFit.cover,
-        ),
-        SizedBox(
-          height: 5.h,
-        ),
-        SizedBox(
-          width: 150,
-          child: Text(
-            item.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 10.w,
-            ),
+  Widget buildPlaylistItem(BuildContext context, Playlist item) {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(PlaylistDetailScreen.route(item));
+      },
+      child: Column(
+        children: [
+          Image.network(
+            item.image,
+            width: 150,
+            height: 150,
+            fit: BoxFit.cover,
           ),
-        )
-      ],
+          SizedBox(
+            height: 5.h,
+          ),
+          SizedBox(
+            width: 150,
+            child: Text(
+              item.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 10.w,
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

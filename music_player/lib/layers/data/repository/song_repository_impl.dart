@@ -21,4 +21,9 @@ class SongRepositoryImpl extends SongRepository{
   Future<List<Song>> getRecentListenSongs(int userId, int pageNumber, int pageSize) {
     return songNetwork.getRecentListenSongs(userId, pageNumber, pageSize);
   }
+
+  @override
+  Future<List<Song>> getSongsInPlaylist(int playlistId, int pageNumber, int pageSize) {
+    return songNetwork.getSongsInPlaylist(playlistId, pageNumber, pageSize);
+  }
 }

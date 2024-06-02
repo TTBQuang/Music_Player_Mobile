@@ -9,7 +9,7 @@ import 'package:music_player/layers/data/source/network/playlist_network.dart';
 import '../../../../utils/strings.dart';
 
 class PlaylistNetworkImpl extends PlaylistNetwork{
-  final String baseUrl = 'http://192.168.1.12:8080/playlist';
+  final String baseUrl = 'http://192.168.1.14:8080/playlist';
 
   @override
   Future<List<PlaylistDto>> getGenrePlaylist(int pageNumber, int pageSize) async {

@@ -6,10 +6,12 @@ import 'package:music_player/layers/data/repository/song_repository_impl.dart';
 import 'package:music_player/layers/data/source/local/user_local_storage_impl.dart';
 import 'package:music_player/layers/data/source/network/playlist_network_impl.dart';
 import 'package:music_player/layers/data/source/network/song_network_impl.dart';
-import 'package:music_player/layers/presentation/login_page/login_screen.dart';
+import 'package:music_player/layers/domain/entity/song.dart';
+import 'package:music_player/layers/presentation/initial_screen/initial_screen.dart';
 import 'package:music_player/layers/presentation/login_page/login_viewmodel.dart';
 import 'package:music_player/layers/presentation/main_page/main_viewmodel.dart';
-import 'package:music_player/layers/presentation/initial_screen/initial_screen.dart';
+import 'package:music_player/layers/presentation/playlist_detail/playlist_detail_viewmodel.dart';
+import 'package:music_player/layers/presentation/playlist_detail/widget/song_item.dart';
 import 'package:music_player/utils/size_config.dart';
 import 'package:provider/provider.dart';
 
@@ -55,11 +57,14 @@ Future<void> main() async {
       userRepository: userRepository,
       songRepository: songRepository,
       playlistRepository: playlistRepository);
+  final playlistDetailViewModel =
+      PlaylistDetailViewModel(songRepository: songRepository);
 
   runApp(MyApp(
     signUpViewModel: signUpViewModel,
     loginViewModel: loginViewModel,
     mainViewModel: mainViewModel,
+    playlistDetailViewModel: playlistDetailViewModel,
   ));
 }
 
@@ -67,12 +72,15 @@ class MyApp extends StatelessWidget {
   final SignUpViewModel signUpViewModel;
   final LoginViewModel loginViewModel;
   final MainViewModel mainViewModel;
+  final PlaylistDetailViewModel playlistDetailViewModel;
 
-  MyApp(
-      {super.key,
-      required this.signUpViewModel,
-      required this.loginViewModel,
-      required this.mainViewModel});
+  MyApp({
+    super.key,
+    required this.signUpViewModel,
+    required this.loginViewModel,
+    required this.mainViewModel,
+    required this.playlistDetailViewModel,
+  });
 
   final SizeConfig sizeConfig = SizeConfig();
 
@@ -85,6 +93,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<SignUpViewModel>.value(value: signUpViewModel),
         ChangeNotifierProvider<LoginViewModel>.value(value: loginViewModel),
         ChangeNotifierProvider<MainViewModel>.value(value: mainViewModel),
+        ChangeNotifierProvider<PlaylistDetailViewModel>.value(value: playlistDetailViewModel),
       ],
       child: MaterialApp(
         title: 'Music Player',

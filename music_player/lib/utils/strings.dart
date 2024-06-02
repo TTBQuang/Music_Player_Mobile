@@ -27,6 +27,7 @@ class Strings {
   static const String popular = 'Nổi bật';
   static const String genre = 'Thể loại';
   static const String singer = 'Nghệ sĩ';
+  static const String errorHappen = 'Đã có lỗi xảy ra';
 
   static const String usernameKey = "USERNAME";
   static const String passwordKey = "PASSWORD";

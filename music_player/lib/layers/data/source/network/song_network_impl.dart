@@ -8,7 +8,7 @@ import 'package:music_player/layers/data/source/network/song_network.dart';
 import '../../../../utils/strings.dart';
 
 class SongNetworkImpl extends SongNetwork{
-  final String baseUrl = 'http://192.168.1.12:8080/song';
+  final String baseUrl = 'http://192.168.1.14:8080/song';
 
   @override
   Future<List<SongDto>> getNewSongs(int pageNumber, int pageSize) async {
@@ -49,8 +49,6 @@ class SongNetworkImpl extends SongNetwork{
     } on TimeoutException {
       // Handle timeout errors
       throw Exception(Strings.timeout);
-    } on Exception{
-      throw Exception();
     }
   }
 
@@ -72,8 +70,31 @@ class SongNetworkImpl extends SongNetwork{
     } on TimeoutException {
       // Handle timeout errors
       throw Exception(Strings.timeout);
-    } on Exception{
-      throw Exception();
+    }
+  }
+
+  @override
+  Future<List<SongDto>> getSongsInPlaylist(int playlistId, int pageNumber, int pageSize) async {
+    try {
+      final url = Uri.parse('$baseUrl/in_playlist?playlistId=$playlistId&pageNumber=$pageNumber&pageSize=$pageSize');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        print('4567');
+        List<dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+        return jsonResponse.map((song) => SongDto.fromJson(song)).toList();;
+      } else {
+        print('123456');
+        throw Exception('${Strings.errorOccurred}: ${response.statusCode}');
+      }
+    } on SocketException {
+      print('SocketException');
+      // Handle network errors
+      throw Exception(Strings.cannotConnectServer);
+    } on TimeoutException {
+      print('TimeoutException');
+      // Handle timeout errors
+      throw Exception(Strings.timeout);
     }
   }
 }
