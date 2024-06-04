@@ -8,11 +8,10 @@ import '../../domain/repository/song_repository.dart';
 class PlaylistDetailViewModel extends ChangeNotifier {
   Playlist? playlist;
   SongRepository songRepository;
-  int pageNumber = 1;
 
   PlaylistDetailViewModel({required this.songRepository});
 
-  Future<List<Song>> getSongsInPlaylist() async {
+  Future<List<Song>> getSongsInPlaylist(int pageNumber) async {
     if (playlist != null) {
       return songRepository.getSongsInPlaylist(
           playlist!.id, pageNumber - 1, Constants.pageSizePlaylistDetailView);
@@ -21,7 +20,7 @@ class PlaylistDetailViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchNewPage() async {
+  Future<void> fetchNewPage(int pageNumber) async {
     List<Song> newSongs = await songRepository.getSongsInPlaylist(
         playlist!.id, pageNumber - 1, Constants.pageSizePlaylistDetailView);
     playlist?.songList.clear();

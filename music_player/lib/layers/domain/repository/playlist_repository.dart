@@ -1,6 +1,6 @@
-import 'package:music_player/layers/domain/entity/playlist.dart';
+import '../../data/dto/paginated_response_dto.dart';
 
 abstract class PlaylistRepository{
-  Future<List<Playlist>> getGenrePlaylist(int pageNumber, int pageSize);
-  Future<List<Playlist>> getSingerPlaylist(int pageNumber, int pageSize);
+  Future<PaginatedResponseDto> getGenrePlaylist(int pageNumber, int pageSize);
+  Future<PaginatedResponseDto> getSingerPlaylist(int pageNumber, int pageSize);
 }

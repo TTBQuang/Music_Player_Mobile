@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 
+import '../../../domain/entity/singer.dart';
 import '../../../domain/entity/song.dart';
 
-class SongItem extends StatelessWidget {
+class SongItemPlaylistDetail extends StatelessWidget {
   final Song song;
 
-  const SongItem(this.song, {super.key});
+  const SongItemPlaylistDetail(this.song, {super.key});
 
   @override
   Widget build(BuildContext context) {
+    String singers = ''; // list of singers of the song
+    for (Singer singer in song.singers) {
+      singers += singer.name;
+      singers += ', ';
+    }
+    singers = singers.substring(0, singers.length - 2);
+
     return InkWell(
       onTap: () {},
       child: Row(
@@ -29,7 +37,7 @@ class SongItem extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  song.singers.first.name,
+                  singers,
                 ),
               ],
             ),

@@ -6,17 +6,17 @@ import 'package:music_player/layers/data/repository/song_repository_impl.dart';
 import 'package:music_player/layers/data/source/local/user_local_storage_impl.dart';
 import 'package:music_player/layers/data/source/network/playlist_network_impl.dart';
 import 'package:music_player/layers/data/source/network/song_network_impl.dart';
-import 'package:music_player/layers/domain/entity/song.dart';
+import 'package:music_player/layers/presentation/all_item_page/all_item_viewmodel.dart';
 import 'package:music_player/layers/presentation/initial_screen/initial_screen.dart';
 import 'package:music_player/layers/presentation/login_page/login_viewmodel.dart';
 import 'package:music_player/layers/presentation/main_page/main_viewmodel.dart';
-import 'package:music_player/layers/presentation/playlist_detail/playlist_detail_viewmodel.dart';
-import 'package:music_player/layers/presentation/playlist_detail/widget/song_item.dart';
+import 'package:music_player/utils/list_factory.dart';
 import 'package:music_player/utils/size_config.dart';
 import 'package:provider/provider.dart';
 
 import 'layers/data/repository/user_repository_impl.dart';
 import 'layers/data/source/network/user_network_impl.dart';
+import 'layers/presentation/playlist_detail_page/playlist_detail_viewmodel.dart';
 import 'layers/presentation/sign_up_page/sign_up_viewmodel.dart';
 
 Future<void> main() async {
@@ -42,14 +42,16 @@ Future<void> main() async {
   // Initialize dependencies
   const storage = FlutterSecureStorage();
   final userLocalStorage = UserLocalStorageImpl(storage);
-
   final userNetwork = UserNetworkImpl();
+  final songNetwork = SongNetworkImpl();
+  final playlistNetwork = PlaylistNetworkImpl();
 
   final userRepository = UserRepositoryImpl(userNetwork, userLocalStorage);
-  final songNetwork = SongNetworkImpl();
   final songRepository = SongRepositoryImpl(songNetwork);
-  final playlistNetwork = PlaylistNetworkImpl();
   final playlistRepository = PlaylistRepositoryImpl(playlistNetwork);
+
+  final ListFactory listFactory = ListFactory(
+      songRepository: songRepository, playlistRepository: playlistRepository);
 
   final signUpViewModel = SignUpViewModel(userRepository);
   final loginViewModel = LoginViewModel(userRepository);
@@ -59,12 +61,17 @@ Future<void> main() async {
       playlistRepository: playlistRepository);
   final playlistDetailViewModel =
       PlaylistDetailViewModel(songRepository: songRepository);
+  final allItemViewModel = AllItemViewModel(listFactory);
+
+
 
   runApp(MyApp(
     signUpViewModel: signUpViewModel,
     loginViewModel: loginViewModel,
     mainViewModel: mainViewModel,
     playlistDetailViewModel: playlistDetailViewModel,
+    listFactory: listFactory,
+    allItemViewModel: allItemViewModel,
   ));
 }
 
@@ -73,6 +80,8 @@ class MyApp extends StatelessWidget {
   final LoginViewModel loginViewModel;
   final MainViewModel mainViewModel;
   final PlaylistDetailViewModel playlistDetailViewModel;
+  final ListFactory listFactory;
+  final AllItemViewModel allItemViewModel;
 
   MyApp({
     super.key,
@@ -80,6 +89,8 @@ class MyApp extends StatelessWidget {
     required this.loginViewModel,
     required this.mainViewModel,
     required this.playlistDetailViewModel,
+    required this.listFactory,
+    required this.allItemViewModel,
   });
 
   final SizeConfig sizeConfig = SizeConfig();
@@ -90,10 +101,13 @@ class MyApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
+        Provider<ListFactory>(create: (_) => listFactory),
         ChangeNotifierProvider<SignUpViewModel>.value(value: signUpViewModel),
         ChangeNotifierProvider<LoginViewModel>.value(value: loginViewModel),
         ChangeNotifierProvider<MainViewModel>.value(value: mainViewModel),
-        ChangeNotifierProvider<PlaylistDetailViewModel>.value(value: playlistDetailViewModel),
+        ChangeNotifierProvider<AllItemViewModel>.value(value: allItemViewModel),
+        ChangeNotifierProvider<PlaylistDetailViewModel>.value(
+            value: playlistDetailViewModel),
       ],
       child: MaterialApp(
         title: 'Music Player',

@@ -19,7 +19,6 @@ class SongDto extends Song {
       List<dynamic> singerJsonList = json['singers'] as List<dynamic>;
       singers = singerJsonList.map((singerJson) => SingerDto.fromJson(singerJson)).toList();
     }
-    //singers = singerList.map((singerJson) => SingerDto.fromJson(singerJson)).toList();
 
     return SongDto(
       id: json['id'],
@@ -29,15 +28,5 @@ class SongDto extends Song {
       releaseDate: DateTime.parse(json['release_date']),
       singers: singers
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'image': image,
-      'link_song': linkSong,
-      'release_date': releaseDate.toIso8601String(),
-    };
   }
 }

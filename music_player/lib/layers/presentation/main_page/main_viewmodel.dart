@@ -24,18 +24,6 @@ class MainViewModel extends ChangeNotifier {
     userRepository.deleteCredentials();
   }
 
-  Future<List<Song>> getNewSongs(int pageNumber, int pageSize) {
-    return songRepository.getNewSongs(pageNumber, pageSize);
-  }
-
-  Future<List<Song>> getPopularSongs(int pageNumber, int pageSize) {
-    return songRepository.getPopularSongs(pageNumber, pageSize);
-  }
-
-  Future<List<Song>> getRecentListenSongs(int userId, int pageNumber, int pageSize) {
-    return songRepository.getRecentListenSongs(userId, pageNumber, pageSize);
-  }
-
   Future<bool> updateUser(User user) async {
     try {
       return userRepository.updateUser(user);
@@ -43,13 +31,5 @@ class MainViewModel extends ChangeNotifier {
       errorMessage = e.toString().extractErrorMessage();
       return false;
     }
-  }
-
-  Future<List<Playlist>> getGenrePlaylist(int pageNumber, int pageSize) {
-    return playlistRepository.getGenrePlaylist(pageNumber, pageSize);
-  }
-
-  Future<List<Playlist>> genSingerPlaylist(int pageNumber, int pageSize) {
-    return playlistRepository.getSingerPlaylist(pageNumber, pageSize);
   }
 }

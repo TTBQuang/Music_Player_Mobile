@@ -7,19 +7,30 @@ import 'package:music_player/layers/data/dto/playlist_dto.dart';
 import 'package:music_player/layers/data/source/network/playlist_network.dart';
 
 import '../../../../utils/strings.dart';
+import '../../dto/paginated_response_dto.dart';
 
 class PlaylistNetworkImpl extends PlaylistNetwork{
   final String baseUrl = 'http://192.168.1.14:8080/playlist';
 
   @override
-  Future<List<PlaylistDto>> getGenrePlaylist(int pageNumber, int pageSize) async {
+  Future<PaginatedResponseDto> getGenrePlaylist(int pageNumber, int pageSize) async {
     final url = Uri.parse('$baseUrl/genre?pageNumber=$pageNumber&pageSize=$pageSize');
     try {
       final response = await http.get(url).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
-        List<dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
-        return jsonResponse.map((playlist) => PlaylistDto.fromJson(playlist)).toList();
+        // Decode the JSON response
+        final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+
+        // Extract the items and totalItems from the JSON response
+        final List<dynamic> items = jsonResponse['items'];
+        final int totalItems = jsonResponse['total_items'];
+
+        // Map each item in the response to SongDto
+        final List<PlaylistDto> songDtoList = items.map((playlist) => PlaylistDto.fromJson(playlist)).toList();
+
+        // Create PaginatedResponseDto with the mapped items and totalItems
+        return PaginatedResponseDto(items: songDtoList, totalItems: totalItems);
       } else {
         throw Exception('${Strings.errorOccurred}: ${response.statusCode}');
       }
@@ -33,14 +44,24 @@ class PlaylistNetworkImpl extends PlaylistNetwork{
   }
 
   @override
-  Future<List<PlaylistDto>> getSingerPlaylist(int pageNumber, int pageSize) async {
+  Future<PaginatedResponseDto> getSingerPlaylist(int pageNumber, int pageSize) async {
     final url = Uri.parse('$baseUrl/singer?pageNumber=$pageNumber&pageSize=$pageSize');
     try {
       final response = await http.get(url).timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
-        List<dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
-        return jsonResponse.map((playlist) => PlaylistDto.fromJson(playlist)).toList();
+        // Decode the JSON response
+        final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+
+        // Extract the items and totalItems from the JSON response
+        final List<dynamic> items = jsonResponse['items'];
+        final int totalItems = jsonResponse['total_items'];
+
+        // Map each item in the response to SongDto
+        final List<PlaylistDto> songDtoList = items.map((playlist) => PlaylistDto.fromJson(playlist)).toList();
+
+        // Create PaginatedResponseDto with the mapped items and totalItems
+        return PaginatedResponseDto(items: songDtoList, totalItems: totalItems);
       } else {
         throw Exception('${Strings.errorOccurred}: ${response.statusCode}');
       }

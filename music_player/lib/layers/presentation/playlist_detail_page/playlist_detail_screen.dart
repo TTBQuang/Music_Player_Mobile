@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:music_player/layers/domain/entity/playlist.dart';
-import 'package:music_player/layers/presentation/playlist_detail/playlist_detail_viewmodel.dart';
-import 'package:music_player/layers/presentation/playlist_detail/widget/song_item.dart';
-import 'package:music_player/layers/presentation/playlist_detail/widget/blurred_header.dart';
+import 'package:music_player/layers/presentation/playlist_detail_page/playlist_detail_viewmodel.dart';
+import 'package:music_player/layers/presentation/playlist_detail_page/widget/blurred_header.dart';
+import 'package:music_player/layers/presentation/playlist_detail_page/widget/navigation_bottom_bar.dart';
+import 'package:music_player/layers/presentation/playlist_detail_page/widget/song_item_playlist_detail.dart';
 import 'package:music_player/utils/size_config.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +31,7 @@ class PlaylistDetailScreen extends StatefulWidget {
 
 class _PlaylistDetailState extends State<PlaylistDetailScreen> {
   late Future<void> _loadSongsFuture;
+  int pageNumber = 1;
 
   @override
   void initState() {
@@ -37,7 +39,7 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
     final viewModel =
         Provider.of<PlaylistDetailViewModel>(context, listen: false);
     viewModel.playlist = widget.playlist;
-    _loadSongsFuture = viewModel.getSongsInPlaylist().then((value) {
+    _loadSongsFuture = viewModel.getSongsInPlaylist(pageNumber).then((value) {
       viewModel.playlist?.songList.clear();
       viewModel.playlist?.songList.addAll(value);
     });
@@ -100,7 +102,7 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                                 if (song != null) {
                                   return Padding(
                                     padding: const EdgeInsets.all(10),
-                                    child: SongItem(song),
+                                    child: SongItemPlaylistDetail(song),
                                   );
                                 }
                                 return null;
@@ -115,42 +117,25 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      if (viewModel.pageNumber > 1) {
-                                        viewModel.pageNumber--;
-                                        viewModel
-                                            .fetchNewPage()
-                                            .then((value) => setState(() {}));
-                                      }
-                                    },
-                                    icon: const Icon(Icons.navigate_before),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {},
-                                    style: const ButtonStyle(
-                                      splashFactory: NoSplash.splashFactory,
-                                    ),
-                                    child: Text(
-                                      viewModel.pageNumber.toString(),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      if (viewModel.pageNumber < maxPage) {
-                                        viewModel.pageNumber++;
-                                        viewModel
-                                            .fetchNewPage()
-                                            .then((value) => setState(() {}));
-                                      }
-                                    },
-                                    icon: const Icon(Icons.navigate_next),
-                                  ),
-                                ],
-                              ),
+                              NavigationBottomBar(
+                                  onPrevClick: () {
+                                    if (pageNumber > 1) {
+                                      pageNumber--;
+                                      viewModel
+                                          .fetchNewPage(pageNumber)
+                                          .then((value) => setState(() {}));
+                                    }
+                                  },
+                                  onNextClick: () {
+                                    if (pageNumber < maxPage) {
+                                      pageNumber++;
+                                      viewModel
+                                          .fetchNewPage(pageNumber)
+                                          .then((value) => setState(() {}));
+                                    }
+                                  },
+                                  pageNumber: pageNumber,
+                                  maxPage: maxPage),
                             ],
                           ),
                         ),

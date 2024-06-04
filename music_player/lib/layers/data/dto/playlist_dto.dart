@@ -16,13 +16,4 @@ class PlaylistDto extends Playlist {
       size: json['size'],
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'image': image,
-      'size': size,
-    };
-  }
 }
