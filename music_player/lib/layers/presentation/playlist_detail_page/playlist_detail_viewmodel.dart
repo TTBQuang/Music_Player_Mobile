@@ -25,5 +25,6 @@ class PlaylistDetailViewModel extends ChangeNotifier {
         playlist!.id, pageNumber - 1, Constants.pageSizePlaylistDetailView);
     playlist?.songList.clear();
     playlist?.songList.addAll(newSongs);
+    notifyListeners();
   }
 }

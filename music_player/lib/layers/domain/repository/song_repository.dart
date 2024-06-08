@@ -6,4 +6,5 @@ abstract class SongRepository{
   Future<PaginatedResponse> getPopularSongs(int pageNumber, int pageSize);
   Future<PaginatedResponse> getRecentListenSongs(int userId, int pageNumber, int pageSize);
   Future<List<Song>> getSongsInPlaylist(int playlistId, int pageNumber, int pageSize);
+  Future<PaginatedResponse> getSongByName(String name, int pageNumber, int pageSize);
 }

@@ -28,7 +28,11 @@ class Strings {
   static const String genre = 'Thể loại';
   static const String singer = 'Nghệ sĩ';
   static const String errorHappen = 'Đã có lỗi xảy ra';
-
-  static const String usernameKey = "USERNAME";
-  static const String passwordKey = "PASSWORD";
+  static const String comment = 'Bình luận';
+  static const String addToFavorites = 'Thêm vào yêu thích';
+  static const String download = 'Tải xuống';
+  static const String seePlaylist = 'Xem danh sách phát';
+  static const String seeSinger = 'Xem nghệ sĩ';
+  static const String searchHint = 'Tìm kiếm bài hát, nghệ sĩ,...';
+  static const String recentlySearch = 'Gần đây';
 }

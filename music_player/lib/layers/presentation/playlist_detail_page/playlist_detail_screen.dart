@@ -3,12 +3,13 @@ import 'package:music_player/layers/domain/entity/playlist.dart';
 import 'package:music_player/layers/presentation/playlist_detail_page/playlist_detail_viewmodel.dart';
 import 'package:music_player/layers/presentation/playlist_detail_page/widget/blurred_header.dart';
 import 'package:music_player/layers/presentation/playlist_detail_page/widget/navigation_bottom_bar.dart';
-import 'package:music_player/layers/presentation/playlist_detail_page/widget/song_item_playlist_detail.dart';
+import 'package:music_player/layers/presentation/playlist_detail_page/widget/horizontal_song_item.dart';
 import 'package:music_player/utils/size_config.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/constants.dart';
 import '../base_screen.dart';
+import '../song_detail_page/song_detail_screen.dart';
 
 class PlaylistDetailScreen extends StatefulWidget {
   final Playlist playlist;
@@ -58,6 +59,7 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                 .ceil();
 
             return Scaffold(
+              resizeToAvoidBottomInset: false,
               body: FutureBuilder<void>(
                 future: _loadSongsFuture,
                 builder: (context, snapshot) {
@@ -102,7 +104,13 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                                 if (song != null) {
                                   return Padding(
                                     padding: const EdgeInsets.all(10),
-                                    child: SongItemPlaylistDetail(song),
+                                    child: HorizontalSongItem(
+                                      song: song,
+                                      onItemClick: () {
+                                        Navigator.of(context)
+                                            .push(SongDetailScreen.route(song));
+                                      },
+                                    ),
                                   );
                                 }
                                 return null;
@@ -121,17 +129,13 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                                   onPrevClick: () {
                                     if (pageNumber > 1) {
                                       pageNumber--;
-                                      viewModel
-                                          .fetchNewPage(pageNumber)
-                                          .then((value) => setState(() {}));
+                                      viewModel.fetchNewPage(pageNumber);
                                     }
                                   },
                                   onNextClick: () {
                                     if (pageNumber < maxPage) {
                                       pageNumber++;
-                                      viewModel
-                                          .fetchNewPage(pageNumber)
-                                          .then((value) => setState(() {}));
+                                      viewModel.fetchNewPage(pageNumber);
                                     }
                                   },
                                   pageNumber: pageNumber,

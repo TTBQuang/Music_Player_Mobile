@@ -111,11 +111,9 @@ class SongNetworkImpl extends SongNetwork{
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        print('4567');
         List<dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
         return jsonResponse.map((song) => SongDto.fromJson(song)).toList();;
       } else {
-        print('123456');
         throw Exception('${Strings.errorOccurred}: ${response.statusCode}');
       }
     } on SocketException {
@@ -124,6 +122,37 @@ class SongNetworkImpl extends SongNetwork{
       throw Exception(Strings.cannotConnectServer);
     } on TimeoutException {
       print('TimeoutException');
+      // Handle timeout errors
+      throw Exception(Strings.timeout);
+    }
+  }
+
+  @override
+  Future<PaginatedResponseDto> getSongByName(String name, int pageNumber, int pageSize) async {
+    try {
+      final url = Uri.parse('$baseUrl/find?name=$name&pageNumber=$pageNumber&pageSize=$pageSize');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        // Decode the JSON response
+        final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+
+        // Extract the items and totalItems from the JSON response
+        final List<dynamic> items = jsonResponse['items'];
+        final int totalItems = jsonResponse['total_items'];
+
+        // Map each item in the response to SongDto
+        final List<SongDto> songDtoList = items.map((song) => SongDto.fromJson(song)).toList();
+
+        // Create PaginatedResponseDto with the mapped items and totalItems
+        return PaginatedResponseDto(items: songDtoList, totalItems: totalItems);
+      } else {
+        throw Exception('${Strings.errorOccurred}: ${response.statusCode}');
+      }
+    } on SocketException {
+      // Handle network errors
+      throw Exception(Strings.cannotConnectServer);
+    } on TimeoutException {
       // Handle timeout errors
       throw Exception(Strings.timeout);
     }

@@ -5,11 +5,11 @@ import 'package:music_player/layers/presentation/main_page/widget/main_home_scre
 
 import '../layers/domain/entity/playlist.dart';
 
-class ListFactory {
+class PlaylistFactory {
   final SongRepository songRepository;
   final PlaylistRepository playlistRepository;
 
-  ListFactory({required this.songRepository, required this.playlistRepository});
+  PlaylistFactory({required this.songRepository, required this.playlistRepository});
 
   Future<PaginatedResponse> getNewSongs(int pageNumber, int pageSize) {
     return songRepository.getNewSongs(pageNumber, pageSize);
@@ -33,18 +33,18 @@ class ListFactory {
   }
 
   Future<PaginatedResponse> getList(
-      ListType listType, int pageNumber, int pageSize, int? userId) {
-    switch (listType) {
-      case ListType.newReleaseSong:
+      PlayListType playListType, int pageNumber, int pageSize, int? userId) {
+    switch (playListType) {
+      case PlayListType.newReleaseSong:
         return getNewSongs(pageNumber, pageSize);
-      case ListType.listenRecentlySong:
+      case PlayListType.listenRecentlySong:
         return getRecentListenSongs(
             pageNumber: pageNumber, pageSize: pageSize, userId: userId ?? 0);
-      case ListType.popularSong:
+      case PlayListType.popularSong:
         return getPopularSongs(pageNumber, pageSize);
-      case ListType.genrePlaylist:
+      case PlayListType.genrePlaylist:
         return getGenrePlaylist(pageNumber, pageSize);
-      case ListType.singerPlaylist:
+      case PlayListType.singerPlaylist:
         return getSingerPlaylist(pageNumber, pageSize);
     }
   }

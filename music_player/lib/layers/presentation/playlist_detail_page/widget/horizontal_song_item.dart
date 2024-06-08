@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import '../../../domain/entity/singer.dart';
 import '../../../domain/entity/song.dart';
 
-class SongItemPlaylistDetail extends StatelessWidget {
+class HorizontalSongItem extends StatelessWidget {
   final Song song;
+  final VoidCallback onItemClick;
 
-  const SongItemPlaylistDetail(this.song, {super.key});
+  const HorizontalSongItem({super.key, required this.song, required this.onItemClick});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class SongItemPlaylistDetail extends StatelessWidget {
     singers = singers.substring(0, singers.length - 2);
 
     return InkWell(
-      onTap: () {},
+      onTap: onItemClick,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

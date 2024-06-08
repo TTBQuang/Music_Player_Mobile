@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:music_player/layers/data/repository/playlist_repository_impl.dart';
+import 'package:music_player/layers/data/repository/search_history_repository_impl.dart';
 import 'package:music_player/layers/data/repository/song_repository_impl.dart';
 import 'package:music_player/layers/data/source/local/user_local_storage_impl.dart';
 import 'package:music_player/layers/data/source/network/playlist_network_impl.dart';
+import 'package:music_player/layers/data/source/network/search_history_network_impl.dart';
 import 'package:music_player/layers/data/source/network/song_network_impl.dart';
 import 'package:music_player/layers/presentation/all_item_page/all_item_viewmodel.dart';
 import 'package:music_player/layers/presentation/initial_screen/initial_screen.dart';
 import 'package:music_player/layers/presentation/login_page/login_viewmodel.dart';
 import 'package:music_player/layers/presentation/main_page/main_viewmodel.dart';
-import 'package:music_player/utils/list_factory.dart';
+import 'package:music_player/layers/presentation/search_song_page/search_song_viewmodel.dart';
+import 'package:music_player/layers/presentation/song_detail_page/song_detail_viewmodel.dart';
+import 'package:music_player/utils/playlist_factory.dart';
 import 'package:music_player/utils/size_config.dart';
 import 'package:provider/provider.dart';
 
@@ -45,12 +49,15 @@ Future<void> main() async {
   final userNetwork = UserNetworkImpl();
   final songNetwork = SongNetworkImpl();
   final playlistNetwork = PlaylistNetworkImpl();
+  final searchHistoryNetwork = SearchHistoryNetworkImpl();
 
   final userRepository = UserRepositoryImpl(userNetwork, userLocalStorage);
   final songRepository = SongRepositoryImpl(songNetwork);
   final playlistRepository = PlaylistRepositoryImpl(playlistNetwork);
+  final searchHistoryRepository =
+      SearchHistoryRepositoryImpl(searchHistoryNetwork);
 
-  final ListFactory listFactory = ListFactory(
+  final PlaylistFactory listFactory = PlaylistFactory(
       songRepository: songRepository, playlistRepository: playlistRepository);
 
   final signUpViewModel = SignUpViewModel(userRepository);
@@ -62,8 +69,10 @@ Future<void> main() async {
   final playlistDetailViewModel =
       PlaylistDetailViewModel(songRepository: songRepository);
   final allItemViewModel = AllItemViewModel(listFactory);
-
-
+  final songDetailViewModel = SongDetailViewModel();
+  final searchSongViewModel = SearchSongViewModel(
+      songRepository: songRepository,
+      searchHistoryRepository: searchHistoryRepository);
 
   runApp(MyApp(
     signUpViewModel: signUpViewModel,
@@ -72,6 +81,8 @@ Future<void> main() async {
     playlistDetailViewModel: playlistDetailViewModel,
     listFactory: listFactory,
     allItemViewModel: allItemViewModel,
+    songDetailViewModel: songDetailViewModel,
+    searchSongViewModel: searchSongViewModel,
   ));
 }
 
@@ -80,8 +91,10 @@ class MyApp extends StatelessWidget {
   final LoginViewModel loginViewModel;
   final MainViewModel mainViewModel;
   final PlaylistDetailViewModel playlistDetailViewModel;
-  final ListFactory listFactory;
+  final PlaylistFactory listFactory;
   final AllItemViewModel allItemViewModel;
+  final SongDetailViewModel songDetailViewModel;
+  final SearchSongViewModel searchSongViewModel;
 
   MyApp({
     super.key,
@@ -91,6 +104,8 @@ class MyApp extends StatelessWidget {
     required this.playlistDetailViewModel,
     required this.listFactory,
     required this.allItemViewModel,
+    required this.songDetailViewModel,
+    required this.searchSongViewModel,
   });
 
   final SizeConfig sizeConfig = SizeConfig();
@@ -101,13 +116,17 @@ class MyApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        Provider<ListFactory>(create: (_) => listFactory),
+        Provider<PlaylistFactory>(create: (_) => listFactory),
         ChangeNotifierProvider<SignUpViewModel>.value(value: signUpViewModel),
         ChangeNotifierProvider<LoginViewModel>.value(value: loginViewModel),
         ChangeNotifierProvider<MainViewModel>.value(value: mainViewModel),
         ChangeNotifierProvider<AllItemViewModel>.value(value: allItemViewModel),
         ChangeNotifierProvider<PlaylistDetailViewModel>.value(
             value: playlistDetailViewModel),
+        ChangeNotifierProvider<SongDetailViewModel>.value(
+            value: songDetailViewModel),
+        ChangeNotifierProvider<SearchSongViewModel>.value(
+            value: searchSongViewModel),
       ],
       child: MaterialApp(
         title: 'Music Player',

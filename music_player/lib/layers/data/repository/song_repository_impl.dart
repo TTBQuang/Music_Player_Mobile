@@ -28,4 +28,9 @@ class SongRepositoryImpl extends SongRepository{
   Future<List<Song>> getSongsInPlaylist(int playlistId, int pageNumber, int pageSize) {
     return songNetwork.getSongsInPlaylist(playlistId, pageNumber, pageSize);
   }
+
+  @override
+  Future<PaginatedResponse> getSongByName(String name, int pageNumber, int pageSize) {
+    return songNetwork.getSongByName(name, pageNumber, pageSize);
+  }
 }

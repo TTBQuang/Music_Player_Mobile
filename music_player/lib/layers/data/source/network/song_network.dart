@@ -6,4 +6,5 @@ abstract class SongNetwork{
   Future<PaginatedResponseDto> getPopularSongs(int pageNumber, int pageSize);
   Future<PaginatedResponseDto> getRecentListenSongs(int userId, int pageNumber, int pageSize);
   Future<List<SongDto>> getSongsInPlaylist(int playlistId, int pageNumber, int pageSize);
+  Future<PaginatedResponseDto> getSongByName(String name, int pageNumber, int pageSize);
 }

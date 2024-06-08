@@ -3,16 +3,16 @@ import 'package:music_player/utils/size_config.dart';
 
 import '../../../domain/entity/song.dart';
 
-class SongItemMain extends StatelessWidget{
+class VerticalSongItem extends StatelessWidget{
   final Song song;
   final VoidCallback onItemClick;
 
-  const SongItemMain({super.key, required this.song, required this.onItemClick});
+  const VerticalSongItem({super.key, required this.song, required this.onItemClick});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: onItemClick,
       child: Column(
         children: [
           Image.network(
