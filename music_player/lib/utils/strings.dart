@@ -35,4 +35,5 @@ class Strings {
   static const String seeSinger = 'Xem nghệ sĩ';
   static const String searchHint = 'Tìm kiếm bài hát, nghệ sĩ,...';
   static const String recentlySearch = 'Gần đây';
+  static const String song = 'Bài hát';
 }

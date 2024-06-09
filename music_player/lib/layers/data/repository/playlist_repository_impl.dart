@@ -17,4 +17,9 @@ class PlaylistRepositoryImpl extends PlaylistRepository{
   Future<PaginatedResponseDto> getSingerPlaylist(int pageNumber, int pageSize) {
     return playlistNetwork.getSingerPlaylist(pageNumber, pageSize);
   }
+
+  @override
+  Future<Playlist> getPlaylistBySingerId(int singerId) {
+    return playlistNetwork.getPlaylistBySingerId(singerId);
+  }
 }

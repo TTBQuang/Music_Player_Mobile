@@ -11,12 +11,12 @@ class AllItemViewModel extends ChangeNotifier {
 
   AllItemViewModel(this.listFactory);
 
-  Future<void> fetchNewPage(PlayListType listType, int pageNumber, int? userId) async {
+  Future<void> fetchNewPage(PlayListType playListType, int pageNumber, int? userId) async {
     int nRow = Constants.rowPerPageAllItemScreen;
     int nCol = (SizeConfig.screenWidth / 175).floor();
 
     listFactory
-        .getList(listType, pageNumber - 1, nRow * nCol, userId)
+        .getList(playListType: playListType, pageNumber: pageNumber - 1, pageSize: nRow * nCol, userId: userId)
         .then((value) => {_addItems(value.items)});
 
     notifyListeners();

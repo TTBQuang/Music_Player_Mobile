@@ -5,11 +5,11 @@ import 'package:music_player/layers/presentation/main_page/main_viewmodel.dart';
 import 'package:music_player/layers/presentation/main_page/widget/library_screen.dart';
 import 'package:music_player/layers/presentation/main_page/widget/main_home_screen.dart';
 import 'package:music_player/layers/presentation/main_page/widget/profile_dialog.dart';
-import 'package:music_player/layers/presentation/search_song_page/search_song_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/strings.dart';
 import '../login_page/login_screen.dart';
+import '../search_page/search_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

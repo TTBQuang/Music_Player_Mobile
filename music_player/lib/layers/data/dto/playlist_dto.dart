@@ -5,7 +5,7 @@ class PlaylistDto extends Playlist {
     required super.id,
     required super.name,
     required super.image,
-    required super.size,
+    required super.totalItems,
   });
 
   factory PlaylistDto.fromJson(Map<String, dynamic> json) {
@@ -13,7 +13,7 @@ class PlaylistDto extends Playlist {
       id: json['id'],
       name: json['name'],
       image: json['image'],
-      size: json['size'],
+      totalItems: json['totalItems'],
     );
   }
 }

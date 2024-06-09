@@ -6,7 +6,6 @@ import 'package:music_player/layers/presentation/main_page/widget/playlist_item.
 import 'package:music_player/layers/presentation/main_page/widget/vertical_song_item.dart';
 import 'package:music_player/utils/constants.dart';
 import 'package:music_player/utils/size_config.dart';
-import 'package:music_player/utils/strings.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../utils/playlist_factory.dart';
@@ -15,14 +14,6 @@ import '../../../domain/entity/song.dart';
 import '../../../domain/entity/user.dart';
 import '../../playlist_detail_page/playlist_detail_screen.dart';
 import '../../song_detail_page/song_detail_screen.dart';
-
-enum PlayListType {
-  newReleaseSong,
-  listenRecentlySong,
-  popularSong,
-  genrePlaylist,
-  singerPlaylist,
-}
 
 class MainHomeScreen extends StatelessWidget {
   const MainHomeScreen({super.key});
@@ -37,17 +28,12 @@ class MainHomeScreen extends StatelessWidget {
           child: SingleChildScrollView(
         child: Column(
           children: [
-            _buildList(
-                context, Strings.newRelease, PlayListType.newReleaseSong, user?.id),
+            _buildList(context, PlayListType.newReleaseSong, user?.id),
             if (user != null)
-              _buildList(context, Strings.listenRecently,
-                  PlayListType.listenRecentlySong, user.id),
-            _buildList(
-                context, Strings.popular, PlayListType.popularSong, user?.id),
-            _buildList(
-                context, Strings.genre, PlayListType.genrePlaylist, user?.id),
-            _buildList(
-                context, Strings.singer, PlayListType.singerPlaylist, user?.id),
+              _buildList(context, PlayListType.listenRecentlySong, user.id),
+            _buildList(context, PlayListType.popularSong, user?.id),
+            _buildList(context, PlayListType.genrePlaylist, user?.id),
+            _buildList(context, PlayListType.singerPlaylist, user?.id),
           ],
         ),
       )),
@@ -55,11 +41,11 @@ class MainHomeScreen extends StatelessWidget {
   }
 
   Widget _buildList(
-      BuildContext context, String title, PlayListType playListType, int? userId) {
-
-    PlaylistFactory listFactory = Provider.of<PlaylistFactory>(context, listen: false);
+      BuildContext context, PlayListType playListType, int? userId) {
+    PlaylistFactory listFactory =
+        Provider.of<PlaylistFactory>(context, listen: false);
     Future<PaginatedResponse> futureResponse = listFactory.getList(
-        playListType, 0, Constants.pageSizeMainHomeView, userId);
+        playListType: playListType, pageNumber: 0, pageSize: Constants.pageSizeMainHomeView, userId:  userId);
 
     return FutureBuilder<PaginatedResponse>(
       future: futureResponse,
@@ -80,13 +66,13 @@ class MainHomeScreen extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context)
-                        .push(AllItemScreen.route(title, playListType));
+                        .push(AllItemScreen.route(playListType));
                   },
                   borderRadius: BorderRadius.circular(0),
                   child: Row(
                     children: [
                       Text(
-                        title,
+                        playListType.title,
                         style: TextStyle(
                           fontSize: 18.w,
                           fontWeight: FontWeight.bold,
@@ -113,8 +99,8 @@ class MainHomeScreen extends StatelessWidget {
                           child: VerticalSongItem(
                             song: item,
                             onItemClick: () {
-                              Navigator.of(context).push(
-                                  SongDetailScreen.route(item));
+                              Navigator.of(context)
+                                  .push(SongDetailScreen.route(item));
                             },
                           ),
                         );

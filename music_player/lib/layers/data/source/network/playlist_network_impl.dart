@@ -14,7 +14,7 @@ class PlaylistNetworkImpl extends PlaylistNetwork{
 
   @override
   Future<PaginatedResponseDto> getGenrePlaylist(int pageNumber, int pageSize) async {
-    final url = Uri.parse('$baseUrl/genre?pageNumber=$pageNumber&pageSize=$pageSize');
+    final url = Uri.parse('$baseUrl/all/genre?pageNumber=$pageNumber&pageSize=$pageSize');
     try {
       final response = await http.get(url).timeout(const Duration(seconds: 5));
 
@@ -45,7 +45,7 @@ class PlaylistNetworkImpl extends PlaylistNetwork{
 
   @override
   Future<PaginatedResponseDto> getSingerPlaylist(int pageNumber, int pageSize) async {
-    final url = Uri.parse('$baseUrl/singer?pageNumber=$pageNumber&pageSize=$pageSize');
+    final url = Uri.parse('$baseUrl/all/singer?pageNumber=$pageNumber&pageSize=$pageSize');
     try {
       final response = await http.get(url).timeout(const Duration(seconds: 5));
 
@@ -62,6 +62,27 @@ class PlaylistNetworkImpl extends PlaylistNetwork{
 
         // Create PaginatedResponseDto with the mapped items and totalItems
         return PaginatedResponseDto(items: songDtoList, totalItems: totalItems);
+      } else {
+        throw Exception('${Strings.errorOccurred}: ${response.statusCode}');
+      }
+    } on SocketException {
+      // Handle network errors
+      throw Exception(Strings.cannotConnectServer);
+    } on TimeoutException {
+      // Handle timeout errors
+      throw Exception(Strings.timeout);
+    }
+  }
+
+  @override
+  Future<PlaylistDto> getPlaylistBySingerId(int singerId) async {
+    final url = Uri.parse('$baseUrl/singer?singerId=$singerId');
+    try {
+      final response = await http.get(url).timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+        return PlaylistDto.fromJson(jsonResponse);
       } else {
         throw Exception('${Strings.errorOccurred}: ${response.statusCode}');
       }

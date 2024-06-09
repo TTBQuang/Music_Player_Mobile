@@ -2,8 +2,21 @@ import 'package:music_player/layers/domain/entity/paginated_response.dart';
 import 'package:music_player/layers/domain/repository/playlist_repository.dart';
 import 'package:music_player/layers/domain/repository/song_repository.dart';
 import 'package:music_player/layers/presentation/main_page/widget/main_home_screen.dart';
+import 'package:music_player/utils/strings.dart';
 
 import '../layers/domain/entity/playlist.dart';
+
+enum PlayListType {
+  newReleaseSong(Strings.recentlySearch),
+  listenRecentlySong(Strings.listenRecently),
+  popularSong(Strings.popular),
+  genrePlaylist(Strings.genre),
+  singerPlaylist(Strings.singer);
+
+  final String title;
+
+  const PlayListType(this.title);
+}
 
 class PlaylistFactory {
   final SongRepository songRepository;
@@ -33,7 +46,7 @@ class PlaylistFactory {
   }
 
   Future<PaginatedResponse> getList(
-      PlayListType playListType, int pageNumber, int pageSize, int? userId) {
+  {required PlayListType playListType, required int pageNumber, required int pageSize, required int? userId}) {
     switch (playListType) {
       case PlayListType.newReleaseSong:
         return getNewSongs(pageNumber, pageSize);

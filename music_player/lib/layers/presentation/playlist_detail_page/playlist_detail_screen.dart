@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:music_player/layers/domain/entity/playlist.dart';
 import 'package:music_player/layers/presentation/playlist_detail_page/playlist_detail_viewmodel.dart';
 import 'package:music_player/layers/presentation/playlist_detail_page/widget/blurred_header.dart';
-import 'package:music_player/layers/presentation/playlist_detail_page/widget/navigation_bottom_bar.dart';
 import 'package:music_player/layers/presentation/playlist_detail_page/widget/horizontal_song_item.dart';
+import 'package:music_player/layers/presentation/playlist_detail_page/widget/navigation_bottom_bar.dart';
 import 'package:music_player/utils/size_config.dart';
 import 'package:provider/provider.dart';
 
@@ -54,7 +54,7 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                 MediaQuery.of(context).padding.top +
                 50;
 
-            final int maxPage = (viewModel.playlist!.size /
+            final int maxPage = (viewModel.playlist!.totalItems /
                     Constants.pageSizePlaylistDetailView)
                 .ceil();
 

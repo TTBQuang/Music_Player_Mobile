@@ -13,23 +13,19 @@ import '../../../utils/playlist_factory.dart';
 import '../../domain/entity/song.dart';
 import '../../domain/entity/user.dart';
 import '../login_page/login_viewmodel.dart';
-import '../main_page/widget/main_home_screen.dart';
 import '../main_page/widget/vertical_song_item.dart';
 import '../playlist_detail_page/playlist_detail_screen.dart';
 import '../playlist_detail_page/widget/navigation_bottom_bar.dart';
 
 class AllItemScreen extends StatefulWidget {
-  final String title;
   final PlayListType playListType;
 
-  const AllItemScreen(
-      {super.key, required this.title, required this.playListType});
+  const AllItemScreen({super.key, required this.playListType});
 
-  static Route<void> route(String name, PlayListType playListType) {
+  static Route<void> route(PlayListType playListType) {
     return MaterialPageRoute(
       builder: (context) {
         return AllItemScreen(
-          title: name,
           playListType: playListType,
         );
       },
@@ -57,12 +53,15 @@ class _AllItemScreenState extends State<AllItemScreen> {
               Provider.of<PlaylistFactory>(context, listen: false);
 
           Future<PaginatedResponse> futureResponse = listFactory.getList(
-              widget.playListType, pageNumber - 1, nRow * nCol, user?.id);
+              playListType: widget.playListType,
+              pageNumber: pageNumber - 1,
+              pageSize: nRow * nCol,
+              userId: user?.id);
 
           return Scaffold(
             appBar: AppBar(
               centerTitle: true,
-              title: Text(widget.title),
+              title: Text(widget.playListType.title),
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
