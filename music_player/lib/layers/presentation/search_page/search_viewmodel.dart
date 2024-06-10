@@ -26,7 +26,7 @@ class SearchViewModel extends ChangeNotifier {
   SingerRepository singerRepository;
 
   List<dynamic> items = [];
-  late int maxPage;
+  int maxPage = 0;
 
   SearchViewModel(
       {required this.songRepository,

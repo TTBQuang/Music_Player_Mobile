@@ -108,7 +108,7 @@ class SearchSongState extends State<SearchSongScreen> {
                 user: user,
                 searchViewModel: _searchViewModel),
             body: SafeArea(
-              child: _textEditingController.text.isEmpty
+              child: _textEditingController.text.isEmpty && user != null
                   ? SearchHistoryList(
                       searchViewModel: _searchViewModel,
                       user: user,

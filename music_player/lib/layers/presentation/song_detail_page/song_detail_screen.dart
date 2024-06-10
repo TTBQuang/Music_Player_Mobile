@@ -32,7 +32,7 @@ class _SongDetailState extends State<SongDetailScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late AudioPlayer _audioPlayer;
-  bool isPlaying = false;
+  bool isPlaying = true;
   List<Color> backgroundColors = [Colors.white, Colors.black];
   bool isDarkBackground = false;
   Duration _duration = const Duration();
@@ -53,7 +53,7 @@ class _SongDetailState extends State<SongDetailScreen>
 
     // play music
     _audioPlayer = AudioPlayer();
-    //_audioPlayer.play(UrlSource(viewModel.song.linkSong));
+    _audioPlayer.play(UrlSource(viewModel.song.linkSong));
 
     // update duration of audio when user play a new audio file
     _audioPlayer.onDurationChanged.listen((Duration d) {
@@ -210,8 +210,7 @@ class _SongDetailState extends State<SongDetailScreen>
                         Row(
                           children: [
                             Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 15),
+                              padding: const EdgeInsets.only(left: 15),
                               child: Text(
                                 '${_position.inMinutes}:${_position.inSeconds.remainder(60).toString().padLeft(2, '0')} '
                                 '/ ${_duration.inMinutes}:${_duration.inSeconds.remainder(60).toString().padLeft(2, '0')}',
