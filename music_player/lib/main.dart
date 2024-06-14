@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -15,6 +16,8 @@ import 'package:music_player/layers/presentation/initial_screen/initial_screen.d
 import 'package:music_player/layers/presentation/login_page/login_viewmodel.dart';
 import 'package:music_player/layers/presentation/main_page/main_viewmodel.dart';
 import 'package:music_player/layers/presentation/song_detail_page/song_detail_viewmodel.dart';
+import 'package:music_player/services/audio_handler.dart';
+import 'package:music_player/services/audio_manager.dart';
 import 'package:music_player/utils/playlist_factory.dart';
 import 'package:music_player/utils/size_config.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +30,8 @@ import 'layers/presentation/sign_up_page/sign_up_viewmodel.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final audioHandler = await initAudioService();
+  final audioManager = AudioManager(audioHandler);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -73,22 +78,28 @@ Future<void> main() async {
   final playlistDetailViewModel =
       PlaylistDetailViewModel(songRepository: songRepository);
   final allItemViewModel = AllItemViewModel(listFactory);
-  final songDetailViewModel = SongDetailViewModel();
+  final songDetailViewModel = SongDetailViewModel(songRepository);
   final searchViewModel = SearchViewModel(
       songRepository: songRepository,
       searchHistoryRepository: searchHistoryRepository,
       singerRepository: singerRepository,
       playlistRepository: playlistRepository);
 
-  runApp(MyApp(
-    signUpViewModel: signUpViewModel,
-    loginViewModel: loginViewModel,
-    mainViewModel: mainViewModel,
-    playlistDetailViewModel: playlistDetailViewModel,
-    listFactory: listFactory,
-    allItemViewModel: allItemViewModel,
-    songDetailViewModel: songDetailViewModel,
-    searchViewModel: searchViewModel,
+  runApp(MultiProvider(
+    providers: [
+      Provider<AudioHandler>(create: (_) => audioHandler),
+      Provider<AudioManager>(create: (_) => audioManager),
+    ],
+    child: MyApp(
+      signUpViewModel: signUpViewModel,
+      loginViewModel: loginViewModel,
+      mainViewModel: mainViewModel,
+      playlistDetailViewModel: playlistDetailViewModel,
+      listFactory: listFactory,
+      allItemViewModel: allItemViewModel,
+      songDetailViewModel: songDetailViewModel,
+      searchViewModel: searchViewModel,
+    ),
   ));
 }
 

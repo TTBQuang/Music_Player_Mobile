@@ -16,4 +16,8 @@ class Song {
     required this.releaseDate,
     required this.singers
   });
+
+  String getSingerNames() {
+    return singers.map((singer) => singer.name).join(', ');
+  }
 }

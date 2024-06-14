@@ -1,23 +1,37 @@
-import 'package:audioplayers/audioplayers.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'package:music_player/layers/presentation/base_screen.dart';
 import 'package:music_player/layers/presentation/song_detail_page/song_detail_viewmodel.dart';
-import 'package:music_player/utils/size_config.dart';
-import 'package:music_player/utils/toast_util.dart';
-import 'package:palette_generator/palette_generator.dart';
+import 'package:music_player/layers/presentation/song_detail_page/widget/audio_progress_bar.dart';
+import 'package:music_player/layers/presentation/song_detail_page/widget/authors_name.dart';
+import 'package:music_player/layers/presentation/song_detail_page/widget/next_song_btn.dart';
+import 'package:music_player/layers/presentation/song_detail_page/widget/play_button.dart';
+import 'package:music_player/layers/presentation/song_detail_page/widget/play_mode_button.dart';
+import 'package:music_player/layers/presentation/song_detail_page/widget/play_mode_dialog.dart';
+import 'package:music_player/layers/presentation/song_detail_page/widget/playlist_title.dart';
+import 'package:music_player/layers/presentation/song_detail_page/widget/previous_song_btn.dart';
+import 'package:music_player/layers/presentation/song_detail_page/widget/rotating_song_art.dart';
+import 'package:music_player/layers/presentation/song_detail_page/widget/song_name.dart';
 import 'package:provider/provider.dart';
+
+import '../../../services/audio_manager.dart';
+import '../../../utils/size_config.dart';
 import '../../../utils/strings.dart';
+import '../../../utils/toast_util.dart';
+import '../../domain/entity/playlist.dart';
 import '../../domain/entity/song.dart';
+import '../base_screen.dart';
 
 class SongDetailScreen extends StatefulWidget {
   final Song song;
+  final Playlist? playlist;
 
-  const SongDetailScreen({super.key, required this.song});
+  const SongDetailScreen(
+      {super.key, required this.song, required this.playlist});
 
-  static Route<void> route(Song song) {
+  static Route<void> route({required Song song, required Playlist? playlist}) {
     return MaterialPageRoute(
       builder: (context) {
-        return SongDetailScreen(song: song);
+        return SongDetailScreen(song: song, playlist: playlist);
       },
     );
   }
@@ -30,13 +44,7 @@ class SongDetailScreen extends StatefulWidget {
 
 class _SongDetailState extends State<SongDetailScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late AudioPlayer _audioPlayer;
-  bool isPlaying = true;
-  List<Color> backgroundColors = [Colors.white, Colors.black];
-  bool isDarkBackground = false;
-  Duration _duration = const Duration();
-  Duration _position = const Duration();
+  late final AudioManager _audioManager;
 
   @override
   void initState() {
@@ -45,93 +53,83 @@ class _SongDetailState extends State<SongDetailScreen>
     final viewModel = Provider.of<SongDetailViewModel>(context, listen: false);
     viewModel.song = widget.song;
 
-    // Disk rotation animation
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 15),
-    )..repeat();
+    _audioManager = Provider.of<AudioManager>(context, listen: false);
+    _audioManager.playlist = widget.playlist;
 
-    // play music
-    _audioPlayer = AudioPlayer();
-    _audioPlayer.play(UrlSource(viewModel.song.linkSong));
-
-    // update duration of audio when user play a new audio file
-    _audioPlayer.onDurationChanged.listen((Duration d) {
-      setState(() {
-        _duration = d;
-      });
-    });
-
-    // update current position in slider of audio
-    _audioPlayer.onPositionChanged.listen((Duration p) {
-      setState(() {
-        _position = p;
-      });
-    });
-
-    _updatePalette();
+    _initAsync();
   }
 
-  // Skip the song to a certain position
-  void _seekToPosition(double value) {
-    final position = Duration(seconds: value.toInt());
-    _audioPlayer.seek(position);
-  }
+  Future<void> _initAsync() async {
+    final viewModel = Provider.of<SongDetailViewModel>(context, listen: false);
+    viewModel.playlist = null;
+    await viewModel.getALlSongsInPlaylist(widget.playlist);
 
-  // update palette of current screen base on image of song
-  Future<void> _updatePalette() async {
-    final PaletteGenerator paletteGenerator =
-        await PaletteGenerator.fromImageProvider(
-      NetworkImage(widget.song.image),
-    );
+    // Create MediaItems
+    final mediaItems = (viewModel.playlist?.songList
+            .map((song) => MediaItem(
+                  id: song.id.toString(),
+                  title: song.name,
+                  artist: song.getSingerNames(),
+                  artUri: Uri.parse(song.image),
+                  album: viewModel.playlist?.name,
+                  extras: {'url': song.linkSong},
+                ))
+            .toList() ??
+        [
+          MediaItem(
+            id: widget.song.id.toString(),
+            title: widget.song.name,
+            artist: widget.song.getSingerNames(),
+            album: null,
+            artUri: Uri.parse(widget.song.image),
+            extras: {'url': widget.song.linkSong},
+          )
+        ]);
 
-    setState(() {
-      backgroundColors = paletteGenerator.colors.take(2).toList();
-      isDarkBackground = backgroundColors.first.computeLuminance() < 0.5;
-    });
-  }
+    // Stop current playback
+    await _audioManager.stop();
 
-  // play or pause music
-  void _togglePlayPause(String link) {
-    if (isPlaying) {
-      _audioPlayer.pause();
-      _controller.stop();
+    // Clear existing queue
+    _audioManager.clearQueue();
+
+    // reset progress bar
+    _audioManager.seek(Duration.zero);
+
+    // Add new queue items
+    _audioManager.addQueueItems(mediaItems);
+
+    // Play the selected song
+    if (viewModel.playlist == null) {
+      playSelectedSong(0);
     } else {
-      _audioPlayer.play(UrlSource(link));
-      _controller.repeat();
+      int index = viewModel.playlist!.songList
+          .indexWhere((item) => item.id == widget.song.id);
+      playSelectedSong(index);
     }
-    setState(() {
-      isPlaying = !isPlaying;
-    });
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    _audioPlayer.dispose();
-    super.dispose();
+  // Function to play a specific song from the playlist
+  void playSelectedSong(int index) {
+    _audioManager.skipToQueueItem(index);
+    _audioManager.play();
   }
 
   @override
   Widget build(BuildContext context) {
     final double iconSize = SizeConfig.screenWidth / 15;
+    final pageManager = Provider.of<AudioManager>(context, listen: false);
 
     return BaseScreen(() =>
         Consumer<SongDetailViewModel>(builder: (context, viewModel, child) {
           return Scaffold(
               resizeToAvoidBottomInset: false,
               appBar: AppBar(
-                iconTheme: IconThemeData(
-                  color: isDarkBackground ? Colors.white : Colors.black,
+                iconTheme: const IconThemeData(
+                  color: Colors.white,
                 ),
                 backgroundColor: Colors.transparent,
                 centerTitle: true,
-                title: Text(
-                  'Hatsune Miku',
-                  style: TextStyle(
-                    color: isDarkBackground ? Colors.white : Colors.black,
-                  ),
-                ),
+                title: const PlaylistTitle(),
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () {
@@ -140,9 +138,9 @@ class _SongDetailState extends State<SongDetailScreen>
                 ),
                 actions: [
                   PopupMenuButton<int>(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.more_vert,
-                      color: isDarkBackground ? Colors.white : Colors.black,
+                      color: Colors.white,
                     ),
                     onSelected: (item) => _onSelected(context, item),
                     itemBuilder: (context) => [
@@ -150,213 +148,138 @@ class _SongDetailState extends State<SongDetailScreen>
                           value: 0, child: Text(Strings.addToFavorites)),
                       const PopupMenuItem<int>(
                           value: 1, child: Text(Strings.download)),
-                      const PopupMenuItem<int>(
-                          value: 2, child: Text(Strings.seePlaylist)),
-                      const PopupMenuItem<int>(
-                          value: 3, child: Text(Strings.seeSinger)),
                     ],
                   ),
                 ],
               ),
               extendBodyBehindAppBar: true,
-              body: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: backgroundColors,
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+              body: ValueListenableBuilder<List<Color>>(
+                valueListenable: pageManager.backgroundColorNotifier,
+                builder: (_, backgroundColors, __) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: backgroundColors,
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                     ),
-                  ),
-                  child: SafeArea(
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(height: 30.h),
-                        RotationTransition(
-                          turns: _controller,
-                          child: Container(
-                            width: SizeConfig.screenWidth * 3 / 4,
-                            height: SizeConfig.screenWidth * 3 / 4,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                image: NetworkImage(viewModel.song.image),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                    child: SafeArea(
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(height: 30.h),
+                          const RotatingSongArt(),
+                          SizedBox(height: 25.h),
+                          SongName(15.w),
+                          SizedBox(height: 5.h),
+                          AuthorsName(12.w),
+                          SizedBox(height: 20.h),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 15),
+                            child: AudioProgressBar(),
                           ),
-                        ),
-                        SizedBox(height: 25.h),
-                        Text(
-                          viewModel.song.name,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15.w,
-                            color:
-                                isDarkBackground ? Colors.white : Colors.black,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(height: 5.h),
-                        Text(
-                          'Hatsune Miku',
-                          style: TextStyle(
-                            fontSize: 12.w,
-                            color:
-                                isDarkBackground ? Colors.white : Colors.black,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(height: 20.h),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 15),
-                              child: Text(
-                                '${_position.inMinutes}:${_position.inSeconds.remainder(60).toString().padLeft(2, '0')} '
-                                '/ ${_duration.inMinutes}:${_duration.inSeconds.remainder(60).toString().padLeft(2, '0')}',
-                                style: TextStyle(
-                                  color: isDarkBackground
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
+                          SizedBox(height: 10.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              PlayModeButton(
+                                  iconSize: iconSize,
+                                  onTap: () => showPlayModeDialog(context)),
+                              PreviousSongButton(iconSize),
+                              PlayButton(iconSize),
+                              NextSongButton(iconSize),
+                              IconButton(
+                                icon: const Icon(Icons.thumb_up),
+                                color: Colors.white,
+                                iconSize: iconSize,
+                                onPressed: () {},
                               ),
-                            ),
-                            Expanded(
-                              child: Slider(
-                                activeColor: isDarkBackground
-                                    ? Colors.white
-                                    : Colors.black,
-                                inactiveColor: Colors.grey,
-                                value: _position.inSeconds.toDouble(),
-                                min: 0.0,
-                                max: _duration.inSeconds.toDouble(),
-                                onChanged: (double value) {
-                                  setState(() {
-                                    _seekToPosition(value);
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10.h),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.list),
-                              //icon: const Icon(Icons.loop),
-                              //icon: const Icon(Icons.shuffle),
-                              color: isDarkBackground
-                                  ? Colors.white
-                                  : Colors.black,
-                              iconSize: iconSize,
-                              onPressed: () {},
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.skip_previous),
-                              color: isDarkBackground
-                                  ? Colors.white
-                                  : Colors.black,
-                              iconSize: iconSize,
-                              onPressed: () {},
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                  isPlaying ? Icons.pause : Icons.play_arrow),
-                              color: isDarkBackground
-                                  ? Colors.white
-                                  : Colors.black,
-                              iconSize: iconSize,
-                              onPressed: () =>
-                                  _togglePlayPause(viewModel.song.linkSong),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.skip_next),
-                              color: isDarkBackground
-                                  ? Colors.white
-                                  : Colors.black,
-                              iconSize: iconSize,
-                              onPressed: () {},
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.thumb_up),
-                              color: isDarkBackground
-                                  ? Colors.white
-                                  : Colors.black,
-                              iconSize: iconSize,
-                              onPressed: () {},
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            padding: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(12.0),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 20.0,
-                                  offset: Offset(0, 10),
-                                ),
-                              ],
-                            ),
-                            child: const Column(
-                              children: [
-                                Text(
-                                  Strings.comment,
-                                  style: TextStyle(
-                                    color: Colors.black,
+                            ],
+                          ),
+                          const Spacer(),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(16.0),
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(12.0),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 20.0,
+                                    offset: Offset(0, 10),
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundImage:
-                                          AssetImage('assets/image/person.png'),
+                                ],
+                              ),
+                              child: const Column(
+                                children: [
+                                  Text(
+                                    Strings.comment,
+                                    style: TextStyle(
+                                      color: Colors.black,
                                     ),
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'User Name',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          SizedBox(height: 5),
-                                          Text(
-                                            'This is a comment. It looks really nice!',
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundImage: AssetImage(
+                                            'assets/image/person.png'),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'User Name',
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(height: 5),
+                                            Text(
+                                              'This is a comment. It looks really nice!',
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  )));
+                  );
+                },
+              ));
         }));
   }
 
-  // select an item in popup menu
+  void showPlayModeDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return PlayModeDialog(
+          onItemClick: (playMode) {
+            _audioManager.changePlayMode(playMode);
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
+  }
+
   void _onSelected(BuildContext context, int item) {
     switch (item) {
       case 0:
@@ -364,12 +287,6 @@ class _SongDetailState extends State<SongDetailScreen>
         break;
       case 1:
         ToastUtil.showToast(1.toString());
-        break;
-      case 2:
-        ToastUtil.showToast(2.toString());
-        break;
-      case 3:
-        ToastUtil.showToast(3.toString());
         break;
     }
   }

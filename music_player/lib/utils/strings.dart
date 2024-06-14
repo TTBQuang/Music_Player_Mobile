@@ -31,9 +31,11 @@ class Strings {
   static const String comment = 'Bình luận';
   static const String addToFavorites = 'Thêm vào yêu thích';
   static const String download = 'Tải xuống';
-  static const String seePlaylist = 'Xem danh sách phát';
-  static const String seeSinger = 'Xem nghệ sĩ';
   static const String searchHint = 'Tìm kiếm bài hát, nghệ sĩ,...';
   static const String recentlySearch = 'Gần đây';
   static const String song = 'Bài hát';
+  static const String playModeDialogTitle = 'Chọn chế độ nghe';
+  static const String playRandomly = 'Phát ngẫu nhiên';
+  static const String playSequentially = 'Phát theo thứ tự';
+  static const String repeat = 'Lặp lại';
 }

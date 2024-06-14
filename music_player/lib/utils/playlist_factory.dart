@@ -7,7 +7,7 @@ import 'package:music_player/utils/strings.dart';
 import '../layers/domain/entity/playlist.dart';
 
 enum PlayListType {
-  newReleaseSong(Strings.recentlySearch),
+  newReleaseSong(Strings.newRelease),
   listenRecentlySong(Strings.listenRecently),
   popularSong(Strings.popular),
   genrePlaylist(Strings.genre),

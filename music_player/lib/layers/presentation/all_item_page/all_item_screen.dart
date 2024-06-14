@@ -113,7 +113,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
                                     song: item,
                                     onItemClick: () {
                                       Navigator.of(context)
-                                          .push(SongDetailScreen.route(item));
+                                          .push(SongDetailScreen.route(song: item, playlist: null));
                                     },
                                   );
                                 }

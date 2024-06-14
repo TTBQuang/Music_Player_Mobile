@@ -91,7 +91,6 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                                 const SizedBox(width: 48),
                               ],
                             ),
-                            centerTitle: true,
                           ),
                         ),
                         SliverPadding(
@@ -108,7 +107,7 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                                       song: song,
                                       onItemClick: () {
                                         Navigator.of(context)
-                                            .push(SongDetailScreen.route(song));
+                                            .push(SongDetailScreen.route(song: song, playlist: viewModel.playlist));
                                       },
                                     ),
                                   );

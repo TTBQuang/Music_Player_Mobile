@@ -7,17 +7,11 @@ class HorizontalSongItem extends StatelessWidget {
   final Song song;
   final VoidCallback onItemClick;
 
-  const HorizontalSongItem({super.key, required this.song, required this.onItemClick});
+  const HorizontalSongItem(
+      {super.key, required this.song, required this.onItemClick});
 
   @override
   Widget build(BuildContext context) {
-    String singers = ''; // list of singers of the song
-    for (Singer singer in song.singers) {
-      singers += singer.name;
-      singers += ', ';
-    }
-    singers = singers.substring(0, singers.length - 2);
-
     return InkWell(
       onTap: onItemClick,
       child: Row(
@@ -38,7 +32,7 @@ class HorizontalSongItem extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  singers,
+                  song.getSingerNames(),
                 ),
               ],
             ),

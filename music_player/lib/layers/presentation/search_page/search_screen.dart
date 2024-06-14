@@ -168,7 +168,7 @@ class SearchSongState extends State<SearchSongScreen> {
                                         song: item,
                                         onItemClick: () {
                                           Navigator.of(context).push(
-                                              SongDetailScreen.route(item));
+                                              SongDetailScreen.route(song: item, playlist: null));
                                         },
                                       )
                                     : item is Singer
