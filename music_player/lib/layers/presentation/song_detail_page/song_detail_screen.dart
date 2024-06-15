@@ -14,6 +14,7 @@ import 'package:music_player/layers/presentation/song_detail_page/widget/song_na
 import 'package:provider/provider.dart';
 
 import '../../../services/audio_manager.dart';
+import '../../../utils/playlist_factory.dart';
 import '../../../utils/size_config.dart';
 import '../../../utils/strings.dart';
 import '../../../utils/toast_util.dart';
@@ -56,13 +57,22 @@ class _SongDetailState extends State<SongDetailScreen>
     _audioManager = Provider.of<AudioManager>(context, listen: false);
     _audioManager.playlist = widget.playlist;
 
-    _initAsync();
+    if (_audioManager.currentPlaylistIdNotifier.value != widget.playlist?.id ||
+        _audioManager.currentSongIdNotifier.value != widget.song.id) {
+      _initAsync();
+    }
   }
 
   Future<void> _initAsync() async {
     final viewModel = Provider.of<SongDetailViewModel>(context, listen: false);
     viewModel.playlist = null;
-    await viewModel.getALlSongsInPlaylist(widget.playlist);
+
+    if (!PlayListType.values
+        .any((type) => type.id != null && type.id == widget.playlist?.id)) {
+      await viewModel.getALlSongsInPlaylist(widget.playlist);
+    } else {
+      viewModel.playlist = widget.playlist?.clone();
+    }
 
     // Create MediaItems
     final mediaItems = (viewModel.playlist?.songList
@@ -72,7 +82,10 @@ class _SongDetailState extends State<SongDetailScreen>
                   artist: song.getSingerNames(),
                   artUri: Uri.parse(song.image),
                   album: viewModel.playlist?.name,
-                  extras: {'url': song.linkSong},
+                  extras: {
+                    'url': song.linkSong,
+                    'id_playlist': widget.playlist?.id
+                  },
                 ))
             .toList() ??
         [

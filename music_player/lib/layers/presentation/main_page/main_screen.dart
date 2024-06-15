@@ -38,66 +38,65 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreen(() =>
-        Consumer<MainViewModel>(builder: (context, viewModel, child) {
-          LoginViewModel loginViewModel = Provider.of<LoginViewModel>(context);
+    return Consumer<MainViewModel>(builder: (context, viewModel, child) {
+      LoginViewModel loginViewModel = Provider.of<LoginViewModel>(context);
 
-          void showProfileDialog(BuildContext context) {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return const ProfileDialog();
+      void showProfileDialog(BuildContext context) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const ProfileDialog();
+          },
+        );
+      }
+
+      return Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: _selectedIndex == 0
+            ? AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              if (loginViewModel.user != null) {
+                showProfileDialog(context);
+              } else {
+                Navigator.of(context).push(
+                  LoginScreen.route(canNavigateBack: true),
+                );
+              }
+            },
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                Navigator.of(context).push(SearchSongScreen.route());
               },
-            );
-          }
-
-          return Scaffold(
-            resizeToAvoidBottomInset: false,
-            appBar: _selectedIndex == 0
-                ? AppBar(
-                    leading: IconButton(
-                      icon: const Icon(Icons.person),
-                      onPressed: () {
-                        if (loginViewModel.user != null) {
-                          showProfileDialog(context);
-                        } else {
-                          Navigator.of(context).push(
-                            LoginScreen.route(canNavigateBack: true),
-                          );
-                        }
-                      },
-                    ),
-                    actions: [
-                      IconButton(
-                        icon: const Icon(Icons.search),
-                        onPressed: () {
-                          Navigator.of(context).push(SearchSongScreen.route());
-                        },
-                      ),
-                    ],
-                  )
-                : null,
-            body: IndexedStack(
-              index: _selectedIndex,
-              children: _pages,
             ),
-            bottomNavigationBar: BottomNavigationBar(
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: Strings.home,
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.local_library),
-                  label: Strings.library,
-                ),
-              ],
-              currentIndex: _selectedIndex,
-              selectedItemColor: Theme.of(context).colorScheme.tertiary,
-              onTap: _onItemTapped,
+          ],
+        )
+            : null,
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _pages,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: Strings.home,
             ),
-          );
-        }));
+            BottomNavigationBarItem(
+              icon: Icon(Icons.local_library),
+              label: Strings.library,
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Theme.of(context).colorScheme.tertiary,
+          onTap: _onItemTapped,
+        ),
+      );
+    });
   }
 
   void _onItemTapped(int index) {

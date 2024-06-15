@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:music_player/layers/domain/entity/paginated_response.dart';
 import 'package:music_player/layers/presentation/all_item_page/all_item_screen.dart';
+import 'package:music_player/layers/presentation/base_screen.dart';
 import 'package:music_player/layers/presentation/login_page/login_viewmodel.dart';
 import 'package:music_player/layers/presentation/main_page/widget/playlist_item.dart';
 import 'package:music_player/layers/presentation/main_page/widget/vertical_song_item.dart';
@@ -23,21 +24,21 @@ class MainHomeScreen extends StatelessWidget {
     LoginViewModel loginViewModel = Provider.of<LoginViewModel>(context);
     User? user = loginViewModel.user;
 
-    return Scaffold(
-      body: SafeArea(
-          child: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildList(context, PlayListType.newReleaseSong, user?.id),
-            if (user != null)
-              _buildList(context, PlayListType.listenRecentlySong, user.id),
-            _buildList(context, PlayListType.popularSong, user?.id),
-            _buildList(context, PlayListType.genrePlaylist, user?.id),
-            _buildList(context, PlayListType.singerPlaylist, user?.id),
-          ],
-        ),
-      )),
-    );
+    return BaseScreen(() => Scaffold(
+          body: SafeArea(
+              child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildList(context, PlayListType.newReleaseSong, user?.id),
+                if (user != null)
+                  _buildList(context, PlayListType.listenRecentlySong, user.id),
+                _buildList(context, PlayListType.popularSong, user?.id),
+                _buildList(context, PlayListType.genrePlaylist, user?.id),
+                _buildList(context, PlayListType.singerPlaylist, user?.id),
+              ],
+            ),
+          )),
+        ));
   }
 
   Widget _buildList(
@@ -45,7 +46,10 @@ class MainHomeScreen extends StatelessWidget {
     PlaylistFactory listFactory =
         Provider.of<PlaylistFactory>(context, listen: false);
     Future<PaginatedResponse> futureResponse = listFactory.getList(
-        playListType: playListType, pageNumber: 0, pageSize: Constants.pageSizeMainHomeView, userId:  userId);
+        playListType: playListType,
+        pageNumber: 0,
+        pageSize: Constants.pageSizeMainHomeView,
+        userId: userId);
 
     return FutureBuilder<PaginatedResponse>(
       future: futureResponse,
@@ -98,9 +102,16 @@ class MainHomeScreen extends StatelessWidget {
                           padding: const EdgeInsets.only(right: 10),
                           child: VerticalSongItem(
                             song: item,
-                            onItemClick: () {
-                              Navigator.of(context)
-                                  .push(SongDetailScreen.route(song: item, playlist: null));
+                            onItemClick: () async {
+                              Playlist? playlist =
+                                  await listFactory.getPlaylistOfCurrentSong(
+                                      playListType, userId);
+
+                              if (context.mounted) {
+                                Navigator.of(context).push(
+                                    SongDetailScreen.route(
+                                        song: item, playlist: playlist));
+                              }
                             },
                           ),
                         );

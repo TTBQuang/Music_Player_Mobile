@@ -89,40 +89,24 @@ Future<void> main() async {
     providers: [
       Provider<AudioHandler>(create: (_) => audioHandler),
       Provider<AudioManager>(create: (_) => audioManager),
+      Provider<PlaylistFactory>(create: (_) => listFactory),
+      ChangeNotifierProvider<SignUpViewModel>.value(value: signUpViewModel),
+      ChangeNotifierProvider<LoginViewModel>.value(value: loginViewModel),
+      ChangeNotifierProvider<MainViewModel>.value(value: mainViewModel),
+      ChangeNotifierProvider<AllItemViewModel>.value(value: allItemViewModel),
+      ChangeNotifierProvider<PlaylistDetailViewModel>.value(
+          value: playlistDetailViewModel),
+      ChangeNotifierProvider<SongDetailViewModel>.value(
+          value: songDetailViewModel),
+      ChangeNotifierProvider<SearchViewModel>.value(value: searchViewModel),
     ],
-    child: MyApp(
-      signUpViewModel: signUpViewModel,
-      loginViewModel: loginViewModel,
-      mainViewModel: mainViewModel,
-      playlistDetailViewModel: playlistDetailViewModel,
-      listFactory: listFactory,
-      allItemViewModel: allItemViewModel,
-      songDetailViewModel: songDetailViewModel,
-      searchViewModel: searchViewModel,
-    ),
+    child: MyApp(),
   ));
 }
 
 class MyApp extends StatelessWidget {
-  final SignUpViewModel signUpViewModel;
-  final LoginViewModel loginViewModel;
-  final MainViewModel mainViewModel;
-  final PlaylistDetailViewModel playlistDetailViewModel;
-  final PlaylistFactory listFactory;
-  final AllItemViewModel allItemViewModel;
-  final SongDetailViewModel songDetailViewModel;
-  final SearchViewModel searchViewModel;
-
   MyApp({
     super.key,
-    required this.signUpViewModel,
-    required this.loginViewModel,
-    required this.mainViewModel,
-    required this.playlistDetailViewModel,
-    required this.listFactory,
-    required this.allItemViewModel,
-    required this.songDetailViewModel,
-    required this.searchViewModel,
   });
 
   final SizeConfig sizeConfig = SizeConfig();
@@ -131,33 +115,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     sizeConfig.init(context);
 
-    return MultiProvider(
-      providers: [
-        Provider<PlaylistFactory>(create: (_) => listFactory),
-        ChangeNotifierProvider<SignUpViewModel>.value(value: signUpViewModel),
-        ChangeNotifierProvider<LoginViewModel>.value(value: loginViewModel),
-        ChangeNotifierProvider<MainViewModel>.value(value: mainViewModel),
-        ChangeNotifierProvider<AllItemViewModel>.value(value: allItemViewModel),
-        ChangeNotifierProvider<PlaylistDetailViewModel>.value(
-            value: playlistDetailViewModel),
-        ChangeNotifierProvider<SongDetailViewModel>.value(
-            value: songDetailViewModel),
-        ChangeNotifierProvider<SearchViewModel>.value(value: searchViewModel),
-      ],
-      child: MaterialApp(
-        title: 'Music Player',
-        theme: ThemeData(
-          // Define your theme here
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        darkTheme: ThemeData(
-          brightness: Brightness.dark,
-          primaryColor: Colors.blue,
-          hintColor: Colors.blueAccent,
-        ),
-        home: const InitialScreen(),
+    return MaterialApp(
+      title: 'Music Player',
+      theme: ThemeData(
+        // Define your theme here
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primaryColor: Colors.blue,
+        hintColor: Colors.blueAccent,
+      ),
+      home: const InitialScreen(),
     );
   }
 }

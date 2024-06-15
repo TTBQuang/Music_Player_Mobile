@@ -38,4 +38,6 @@ class Strings {
   static const String playRandomly = 'Phát ngẫu nhiên';
   static const String playSequentially = 'Phát theo thứ tự';
   static const String repeat = 'Lặp lại';
+  static const String savedSong = 'Nhạc đã lưu';
+  static const String downloadedSong = 'Nhạc đã tải';
 }

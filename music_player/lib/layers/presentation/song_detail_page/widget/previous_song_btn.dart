@@ -15,9 +15,13 @@ class PreviousSongButton extends StatelessWidget {
       builder: (_, isInPlaylist, __) {
         return IconButton(
           iconSize: iconSize,
-          color: Colors.white,
+          color: isInPlaylist ? Colors.white : Colors.grey,
           icon: const Icon(Icons.skip_previous),
-          onPressed: (isInPlaylist) ? pageManager.previous : null,
+          onPressed: () {
+            if (isInPlaylist) {
+              pageManager.previous();
+            }
+          },
         );
       },
     );

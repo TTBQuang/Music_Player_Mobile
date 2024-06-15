@@ -5,6 +5,10 @@ class Constants{
   static const int rowPerPageAllItemScreen = 7;
   static const int pageSizeSearchHistory = 10;
 
+  static const int newSongsPlaylistId = -1;
+  static const int recentListenSongsPlaylistId = -2;
+  static const int popularSongsPlaylistId = -3;
+
   static const String usernameKey = "USERNAME";
   static const String passwordKey = "PASSWORD";
 }

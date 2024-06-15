@@ -1,6 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:music_player/utils/size_config.dart';
+import 'package:music_player/utils/strings.dart';
 
-class LibraryScreen extends StatefulWidget{
+class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
 
   @override
@@ -9,9 +11,59 @@ class LibraryScreen extends StatefulWidget{
   }
 }
 
-class _LibraryState extends State<LibraryScreen>{
+class _LibraryState extends State<LibraryScreen> {
+  bool isText1Underlined = true;
+  bool isText2Underlined = false;
+
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Library'),);
+    return Scaffold(
+      body: SafeArea(
+        child: Row(
+          children: [
+            Expanded(
+              child: TextButton(
+                child: Text(Strings.downloadedSong,
+                    style: TextStyle(
+                      fontSize: 15.w,
+                      fontWeight: isText1Underlined
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                      color: isText1Underlined
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.secondary,
+                    )),
+                onPressed: () {
+                  setState(() {
+                    isText1Underlined = true;
+                    isText2Underlined = false;
+                  });
+                },
+              ),
+            ),
+            Expanded(
+              child: TextButton(
+                child: Text(Strings.savedSong,
+                    style: TextStyle(
+                      fontSize: 15.w,
+                      fontWeight: isText2Underlined
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                      color: isText2Underlined
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.secondary,
+                    )),
+                onPressed: () {
+                  setState(() {
+                    isText1Underlined = false;
+                    isText2Underlined = true;
+                  });
+                },
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

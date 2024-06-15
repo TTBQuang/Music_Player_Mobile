@@ -7,6 +7,7 @@ import 'package:music_player/layers/presentation/playlist_detail_page/widget/nav
 import 'package:music_player/utils/size_config.dart';
 import 'package:provider/provider.dart';
 
+import '../../../services/audio_manager.dart';
 import '../../../utils/constants.dart';
 import '../base_screen.dart';
 import '../song_detail_page/song_detail_screen.dart';
@@ -58,6 +59,9 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                     Constants.pageSizePlaylistDetailView)
                 .ceil();
 
+            final pageManager =
+                Provider.of<AudioManager>(context, listen: false);
+
             return Scaffold(
               resizeToAvoidBottomInset: false,
               body: FutureBuilder<void>(
@@ -103,11 +107,26 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                                 if (song != null) {
                                   return Padding(
                                     padding: const EdgeInsets.all(10),
-                                    child: HorizontalSongItem(
-                                      song: song,
-                                      onItemClick: () {
-                                        Navigator.of(context)
-                                            .push(SongDetailScreen.route(song: song, playlist: viewModel.playlist));
+                                    child: ValueListenableBuilder<int>(
+                                      valueListenable:
+                                          pageManager.currentPlaylistIdNotifier,
+                                      builder: (_, playlistId, __) {
+                                        return ValueListenableBuilder(
+                                            valueListenable: pageManager
+                                                .currentSongIdNotifier,
+                                            builder: (_, songId, __) {
+                                              return HorizontalSongItem(
+                                                song: song,
+                                                isPlaying: (songId == song.id && playlistId == viewModel.playlist?.id),
+                                                onItemClick: () {
+                                                  Navigator.of(context).push(
+                                                      SongDetailScreen.route(
+                                                          song: song,
+                                                          playlist: viewModel
+                                                              .playlist));
+                                                },
+                                              );
+                                            });
                                       },
                                     ),
                                   );

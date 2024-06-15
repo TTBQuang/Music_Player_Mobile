@@ -166,6 +166,7 @@ class SearchSongState extends State<SearchSongScreen> {
                                 child: item is Song
                                     ? HorizontalSongItem(
                                         song: item,
+                                        isPlaying: false,
                                         onItemClick: () {
                                           Navigator.of(context).push(
                                               SongDetailScreen.route(song: item, playlist: null));

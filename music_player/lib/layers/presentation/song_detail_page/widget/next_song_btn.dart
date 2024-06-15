@@ -5,6 +5,7 @@ import '../../../../services/audio_manager.dart';
 
 class NextSongButton extends StatelessWidget {
   final double iconSize;
+
   const NextSongButton(this.iconSize, {super.key});
 
   @override
@@ -15,9 +16,13 @@ class NextSongButton extends StatelessWidget {
       builder: (_, isInPlaylist, __) {
         return IconButton(
           iconSize: iconSize,
-          color: Colors.white,
+          color: isInPlaylist ? Colors.white : Colors.grey,
           icon: const Icon(Icons.skip_next),
-          onPressed: (isInPlaylist) ? pageManager.next : null,
+          onPressed: () {
+            if (isInPlaylist) {
+              pageManager.next();
+            }
+          },
         );
       },
     );

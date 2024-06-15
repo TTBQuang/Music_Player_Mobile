@@ -2,20 +2,23 @@ import 'package:music_player/layers/domain/entity/paginated_response.dart';
 import 'package:music_player/layers/domain/repository/playlist_repository.dart';
 import 'package:music_player/layers/domain/repository/song_repository.dart';
 import 'package:music_player/layers/presentation/main_page/widget/main_home_screen.dart';
+import 'package:music_player/utils/constants.dart';
 import 'package:music_player/utils/strings.dart';
 
 import '../layers/domain/entity/playlist.dart';
+import '../layers/domain/entity/song.dart';
 
 enum PlayListType {
-  newReleaseSong(Strings.newRelease),
-  listenRecentlySong(Strings.listenRecently),
-  popularSong(Strings.popular),
-  genrePlaylist(Strings.genre),
-  singerPlaylist(Strings.singer);
+  newReleaseSong(Strings.newRelease, Constants.newSongsPlaylistId),
+  listenRecentlySong(Strings.listenRecently, Constants.recentListenSongsPlaylistId),
+  popularSong(Strings.popular, Constants.popularSongsPlaylistId),
+  genrePlaylist(Strings.genre, null),
+  singerPlaylist(Strings.singer, null);
 
   final String title;
+  final int? id;
 
-  const PlayListType(this.title);
+  const PlayListType(this.title, this.id);
 }
 
 class PlaylistFactory {
@@ -60,5 +63,27 @@ class PlaylistFactory {
       case PlayListType.singerPlaylist:
         return getSingerPlaylist(pageNumber, pageSize);
     }
+  }
+
+  Future<Playlist?> getPlaylistOfCurrentSong(PlayListType playListType, int? userId) async {
+    PaginatedResponse? value;
+    Playlist? playlist;
+
+    if (playListType.id != null) {
+      value = await getList(
+          playListType: playListType,
+          pageNumber: 0,
+          pageSize: 1000,
+          userId: userId);
+
+      playlist = Playlist(
+          id: playListType.id!,
+          name: playListType.title,
+          image: '',
+          totalItems: value.totalItems);
+      playlist.songList
+          .addAll(value.items as List<Song>);
+    }
+    return playlist;
   }
 }
