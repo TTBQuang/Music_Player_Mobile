@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:music_player/layers/data/source/network/search_history_network.dart';
-import 'package:music_player/layers/domain/entity/search_history.dart';
 
 import '../../../../utils/strings.dart';
 import '../../dto/search_history_dto.dart';
@@ -42,7 +41,6 @@ class SearchHistoryNetworkImpl extends SearchHistoryNetwork {
   @override
   Future<void> saveSearchHistory(SearchHistoryDto searchHistory) async {
     final url = Uri.parse('$baseUrl/save');
-    print('id: ${searchHistory.user.id}');
     try {
       http
           .post(

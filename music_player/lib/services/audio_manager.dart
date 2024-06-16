@@ -22,6 +22,7 @@ class AudioManager {
   final currentSongIdNotifier = ValueNotifier<int>(0);
 
   final AudioHandler _audioHandler;
+  Function(int)? saveListenHistory;
   Playlist? playlist;
 
   AudioManager(this._audioHandler) {
@@ -30,7 +31,15 @@ class AudioManager {
     _listenToBufferedPosition();
     _listenToTotalDuration();
     _listenToChangesInSong();
+
+    // if current song changes, call callback to save listen history to database
+    currentSongIdNotifier.addListener((){
+      if (saveListenHistory != null){
+        saveListenHistory!(currentSongIdNotifier.value);
+      }
+    });
   }
+
 
   void play() => _audioHandler.play();
 

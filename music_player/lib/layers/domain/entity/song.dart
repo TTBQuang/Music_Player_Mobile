@@ -1,12 +1,12 @@
 import 'package:music_player/layers/domain/entity/singer.dart';
 
 class Song {
-  int id;
-  String name;
-  String image;
-  String linkSong;
-  DateTime releaseDate;
-  List<Singer> singers;
+  int? id;
+  String? name;
+  String? image;
+  String? linkSong;
+  DateTime? releaseDate;
+  List<Singer>? singers;
 
   Song({
     required this.id,
@@ -18,6 +18,6 @@ class Song {
   });
 
   String getSingerNames() {
-    return singers.map((singer) => singer.name).join(', ');
+    return singers?.map((singer) => singer.name).join(', ') ?? '';
   }
 }

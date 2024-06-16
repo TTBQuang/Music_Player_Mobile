@@ -1,5 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:music_player/layers/domain/entity/listen_history.dart';
+import 'package:music_player/layers/presentation/login_page/login_viewmodel.dart';
 import 'package:music_player/layers/presentation/song_detail_page/song_detail_viewmodel.dart';
 import 'package:music_player/layers/presentation/song_detail_page/widget/audio_progress_bar.dart';
 import 'package:music_player/layers/presentation/song_detail_page/widget/authors_name.dart';
@@ -11,6 +13,7 @@ import 'package:music_player/layers/presentation/song_detail_page/widget/playlis
 import 'package:music_player/layers/presentation/song_detail_page/widget/previous_song_btn.dart';
 import 'package:music_player/layers/presentation/song_detail_page/widget/rotating_song_art.dart';
 import 'package:music_player/layers/presentation/song_detail_page/widget/song_name.dart';
+import 'package:music_player/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 import '../../../services/audio_manager.dart';
@@ -20,6 +23,7 @@ import '../../../utils/strings.dart';
 import '../../../utils/toast_util.dart';
 import '../../domain/entity/playlist.dart';
 import '../../domain/entity/song.dart';
+import '../../domain/entity/user.dart';
 import '../base_screen.dart';
 
 class SongDetailScreen extends StatefulWidget {
@@ -46,6 +50,7 @@ class SongDetailScreen extends StatefulWidget {
 class _SongDetailState extends State<SongDetailScreen>
     with SingleTickerProviderStateMixin {
   late final AudioManager _audioManager;
+  User? user;
 
   @override
   void initState() {
@@ -56,21 +61,49 @@ class _SongDetailState extends State<SongDetailScreen>
 
     _audioManager = Provider.of<AudioManager>(context, listen: false);
     _audioManager.playlist = widget.playlist;
+    _audioManager.saveListenHistory = saveListenHistory;
 
+    // if user listen new song, load data
     if (_audioManager.currentPlaylistIdNotifier.value != widget.playlist?.id ||
         _audioManager.currentSongIdNotifier.value != widget.song.id) {
       _initAsync();
     }
   }
 
+  // save listen history of this song to database
+  void saveListenHistory(int songId) {
+    final viewModel = Provider.of<SongDetailViewModel>(context, listen: false);
+
+    if (user != null) {
+      viewModel.saveListenHistory(ListenHistory(
+          id: null,
+          user: user!,
+          song: Song(
+              id: songId,
+              name: null,
+              image: null,
+              linkSong: null,
+              releaseDate: null,
+              singers: null),
+          time: DateTime.now()));
+    }
+  }
+
+  // load data
   Future<void> _initAsync() async {
     final viewModel = Provider.of<SongDetailViewModel>(context, listen: false);
+    final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    user = loginViewModel.user;
+
+    // reset playlist when user listen to new song
     viewModel.playlist = null;
 
     if (!PlayListType.values
         .any((type) => type.id != null && type.id == widget.playlist?.id)) {
+      // if user don't choose song in three category in main screen
       await viewModel.getALlSongsInPlaylist(widget.playlist);
     } else {
+      // if user choose song in three category in main screen
       viewModel.playlist = widget.playlist?.clone();
     }
 
@@ -78,9 +111,10 @@ class _SongDetailState extends State<SongDetailScreen>
     final mediaItems = (viewModel.playlist?.songList
             .map((song) => MediaItem(
                   id: song.id.toString(),
-                  title: song.name,
+                  title: song.name ?? '',
                   artist: song.getSingerNames(),
-                  artUri: Uri.parse(song.image),
+                  artUri:
+                      Uri.parse(song.image ?? Constants.defaultNetworkImage),
                   album: viewModel.playlist?.name,
                   extras: {
                     'url': song.linkSong,
@@ -89,12 +123,14 @@ class _SongDetailState extends State<SongDetailScreen>
                 ))
             .toList() ??
         [
+          // if playlist null
           MediaItem(
             id: widget.song.id.toString(),
-            title: widget.song.name,
+            title: widget.song.name ?? '',
             artist: widget.song.getSingerNames(),
             album: null,
-            artUri: Uri.parse(widget.song.image),
+            artUri:
+                Uri.parse(widget.song.image ?? Constants.defaultNetworkImage),
             extras: {'url': widget.song.linkSong},
           )
         ]);

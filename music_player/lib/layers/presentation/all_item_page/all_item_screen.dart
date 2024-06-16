@@ -114,7 +114,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
                                         song: item,
                                         onItemClick: () async {
                                           Playlist? playlist = await listFactory
-                                              .getPlaylistOfCurrentSong(
+                                              .getPlaylistByPlayListType(
                                                   widget.playListType,
                                                   user?.id);
 

@@ -2,11 +2,13 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:music_player/layers/data/repository/listen_history_repository_impl.dart';
 import 'package:music_player/layers/data/repository/playlist_repository_impl.dart';
 import 'package:music_player/layers/data/repository/search_history_repository_impl.dart';
 import 'package:music_player/layers/data/repository/singer_repository_impl.dart';
 import 'package:music_player/layers/data/repository/song_repository_impl.dart';
 import 'package:music_player/layers/data/source/local/user_local_storage_impl.dart';
+import 'package:music_player/layers/data/source/network/listen_history_network_impl.dart';
 import 'package:music_player/layers/data/source/network/playlist_network_impl.dart';
 import 'package:music_player/layers/data/source/network/search_history_network_impl.dart';
 import 'package:music_player/layers/data/source/network/singer_network_impl.dart';
@@ -30,8 +32,6 @@ import 'layers/presentation/sign_up_page/sign_up_viewmodel.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final audioHandler = await initAudioService();
-  final audioManager = AudioManager(audioHandler);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -58,6 +58,7 @@ Future<void> main() async {
   final playlistNetwork = PlaylistNetworkImpl();
   final searchHistoryNetwork = SearchHistoryNetworkImpl();
   final singerNetwork = SingerNetworkImpl();
+  final listenHistoryNetwork = ListenHistoryNetworkImpl();
 
   final userRepository = UserRepositoryImpl(userNetwork, userLocalStorage);
   final songRepository = SongRepositoryImpl(songNetwork);
@@ -65,6 +66,8 @@ Future<void> main() async {
   final searchHistoryRepository =
       SearchHistoryRepositoryImpl(searchHistoryNetwork);
   final singerRepository = SingerRepositoryImpl(singerNetwork);
+  final listenHistoryRepository =
+      ListenHistoryRepositoryImpl(listenHistoryNetwork);
 
   final PlaylistFactory listFactory = PlaylistFactory(
       songRepository: songRepository, playlistRepository: playlistRepository);
@@ -78,12 +81,17 @@ Future<void> main() async {
   final playlistDetailViewModel =
       PlaylistDetailViewModel(songRepository: songRepository);
   final allItemViewModel = AllItemViewModel(listFactory);
-  final songDetailViewModel = SongDetailViewModel(songRepository);
+  final songDetailViewModel = SongDetailViewModel(
+      songRepository: songRepository,
+      listenHistoryRepository: listenHistoryRepository);
   final searchViewModel = SearchViewModel(
       songRepository: songRepository,
       searchHistoryRepository: searchHistoryRepository,
       singerRepository: singerRepository,
       playlistRepository: playlistRepository);
+
+  final audioHandler = await initAudioService();
+  final audioManager = AudioManager(audioHandler);
 
   runApp(MultiProvider(
     providers: [

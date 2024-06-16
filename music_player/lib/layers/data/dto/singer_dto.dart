@@ -10,4 +10,12 @@ class SingerDto extends Singer{
       image: json['image']
     );
   }
+
+  factory SingerDto.fromSinger(Singer singer) {
+    return SingerDto(
+        id: singer.id,
+        name: singer.name,
+        image: singer.image
+    );
+  }
 }

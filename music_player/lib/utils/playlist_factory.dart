@@ -65,7 +65,7 @@ class PlaylistFactory {
     }
   }
 
-  Future<Playlist?> getPlaylistOfCurrentSong(PlayListType playListType, int? userId) async {
+  Future<Playlist?> getPlaylistByPlayListType(PlayListType playListType, int? userId) async {
     PaginatedResponse? value;
     Playlist? playlist;
 
@@ -73,7 +73,7 @@ class PlaylistFactory {
       value = await getList(
           playListType: playListType,
           pageNumber: 0,
-          pageSize: 1000,
+          pageSize: Constants.maxPageSize,
           userId: userId);
 
       playlist = Playlist(

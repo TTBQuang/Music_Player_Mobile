@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../utils/constants.dart';
 import '../../../../utils/strings.dart';
 import '../../../domain/entity/singer.dart';
 import '../../../domain/entity/song.dart';
@@ -23,7 +24,7 @@ class HorizontalSongItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.network(
-              song.image,
+              song.image ?? Constants.defaultNetworkImage,
               width: 60,
               height: 60,
             ),
@@ -33,7 +34,7 @@ class HorizontalSongItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    song.name,
+                    song.name ?? '',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(

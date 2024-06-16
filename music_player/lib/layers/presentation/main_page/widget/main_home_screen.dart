@@ -104,7 +104,7 @@ class MainHomeScreen extends StatelessWidget {
                             song: item,
                             onItemClick: () async {
                               Playlist? playlist =
-                                  await listFactory.getPlaylistOfCurrentSong(
+                                  await listFactory.getPlaylistByPlayListType(
                                       playListType, userId);
 
                               if (context.mounted) {

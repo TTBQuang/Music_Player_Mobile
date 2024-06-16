@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:music_player/utils/size_config.dart';
 
+import '../../../../utils/constants.dart';
 import '../../../domain/entity/song.dart';
 
 class VerticalSongItem extends StatelessWidget{
@@ -16,7 +17,7 @@ class VerticalSongItem extends StatelessWidget{
       child: Column(
         children: [
           Image.network(
-            song.image,
+            song.image ?? Constants.defaultNetworkImage,
             width: 150,
             height: 150,
             fit: BoxFit.cover,
@@ -27,7 +28,7 @@ class VerticalSongItem extends StatelessWidget{
           SizedBox(
             width: 150,
             child: Text(
-              song.name,
+              song.name ?? '',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,

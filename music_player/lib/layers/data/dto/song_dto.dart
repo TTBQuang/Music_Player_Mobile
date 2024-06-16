@@ -29,4 +29,31 @@ class SongDto extends Song {
       singers: singers
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'image': image,
+      'link_song': linkSong,
+      'release_date': releaseDate?.toIso8601String(),
+    };
+  }
+
+  factory SongDto.fromSong(Song song) {
+    // Convert singers to SingerDto if necessary
+    List<SingerDto> singers = [];
+    if (song.singers != null) {
+      singers = song.singers!.map((singer) => SingerDto.fromSinger(singer)).toList();
+    }
+
+    return SongDto(
+        id: song.id,
+        name: song.name,
+        image: song.image,
+        linkSong: song.linkSong,
+        releaseDate: song.releaseDate,
+        singers: singers
+    );
+  }
 }
