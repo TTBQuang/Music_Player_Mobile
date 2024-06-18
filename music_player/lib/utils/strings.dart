@@ -5,6 +5,7 @@ class Strings {
   static const String saveAccount = "Ghi nhớ đăng nhập";
   static const String login = "Đăng nhập";
   static const String signUp = "Đăng ký";
+  static const String cancel = 'Đóng';
   static const String createNewAccount = "Tạo tài khoản";
   static const String usernameOrPasswordEmpty = "Điền đầy đủ tên đăng nhập và mật khẩu";
   static const String usernameExisted = "Tên đăng nhập đã tồn tại";
@@ -40,4 +41,8 @@ class Strings {
   static const String repeat = 'Lặp lại';
   static const String savedSong = 'Nhạc đã lưu';
   static const String downloadedSong = 'Nhạc đã tải';
+  static const String goToSetting = 'Đi đến Cài đặt';
+  static const String explainPermissionTitle = 'Cấp quyền truy cập';
+  static const String explainAudioPermissionContent =
+      'Ứng dụng cần được cấp quyền truy cập vào các tệp nhạc và âm thanh của thiết bị để thực hiện chức năng này';
 }

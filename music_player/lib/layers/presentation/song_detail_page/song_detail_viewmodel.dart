@@ -8,7 +8,6 @@ import '../../domain/repository/listen_history_repository.dart';
 import '../../domain/repository/song_repository.dart';
 
 class SongDetailViewModel extends ChangeNotifier {
-  late Song song;
   Playlist? playlist;
   SongRepository songRepository;
   ListenHistoryRepository listenHistoryRepository;

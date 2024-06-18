@@ -17,10 +17,10 @@ import 'package:music_player/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 import '../../../services/audio_manager.dart';
+import '../../../utils/download_util.dart';
 import '../../../utils/playlist_factory.dart';
 import '../../../utils/size_config.dart';
 import '../../../utils/strings.dart';
-import '../../../utils/toast_util.dart';
 import '../../domain/entity/playlist.dart';
 import '../../domain/entity/song.dart';
 import '../../domain/entity/user.dart';
@@ -55,9 +55,6 @@ class _SongDetailState extends State<SongDetailScreen>
   @override
   void initState() {
     super.initState();
-
-    final viewModel = Provider.of<SongDetailViewModel>(context, listen: false);
-    viewModel.song = widget.song;
 
     _audioManager = Provider.of<AudioManager>(context, listen: false);
     _audioManager.playlist = widget.playlist;
@@ -332,10 +329,11 @@ class _SongDetailState extends State<SongDetailScreen>
   void _onSelected(BuildContext context, int item) {
     switch (item) {
       case 0:
-        ToastUtil.showToast(0.toString());
         break;
       case 1:
-        ToastUtil.showToast(1.toString());
+        String url = _audioManager.currentSongUrlNotifier.value;
+        String name = _audioManager.currentSongNameNotifier.value;
+        DownloadUtils.startDownload(url, name, context);
         break;
     }
   }

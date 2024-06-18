@@ -52,7 +52,7 @@ class _RotatingSongArtState extends State<RotatingSongArt> with SingleTickerProv
                   shape: BoxShape.circle,
                   image: DecorationImage(
                     image: link.isEmpty
-                        ? const AssetImage('assets/image/placeholder_round.png') as ImageProvider<Object>
+                        ? const AssetImage('assets/image/logo.png') as ImageProvider<Object>
                         : NetworkImage(link) as ImageProvider<Object>,
                     fit: BoxFit.cover,
                   ),

@@ -20,6 +20,7 @@ class AudioManager {
   final currentPlaylistTitleNotifier = ValueNotifier<String>('');
   final currentPlaylistIdNotifier = ValueNotifier<int>(0);
   final currentSongIdNotifier = ValueNotifier<int>(0);
+  final currentSongUrlNotifier = ValueNotifier<String>('');
 
   final AudioHandler _audioHandler;
   Function(int)? saveListenHistory;
@@ -114,6 +115,7 @@ class AudioManager {
       currentPlaylistTitleNotifier.value = mediaItem?.album ?? '';
       currentPlaylistIdNotifier.value = mediaItem?.extras?['id_playlist'] ?? 0;
       currentSongIdNotifier.value = int.parse(mediaItem?.id ?? '0');
+      currentSongUrlNotifier.value = mediaItem?.extras!['url'] ?? '';
       _updateSkipButtons();
       _updateBackgroundColor(mediaItem);
     });

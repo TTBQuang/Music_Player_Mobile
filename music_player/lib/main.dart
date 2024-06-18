@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -22,8 +23,10 @@ import 'package:music_player/services/audio_handler.dart';
 import 'package:music_player/services/audio_manager.dart';
 import 'package:music_player/utils/playlist_factory.dart';
 import 'package:music_player/utils/size_config.dart';
+import 'package:music_player/utils/strings.dart';
 import 'package:provider/provider.dart';
 
+import 'firebase_options.dart';
 import 'layers/data/repository/user_repository_impl.dart';
 import 'layers/data/source/network/user_network_impl.dart';
 import 'layers/presentation/playlist_detail_page/playlist_detail_viewmodel.dart';
@@ -38,17 +41,9 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
-  // final storageRef = FirebaseStorage.instance.ref();
-  // final listResult = await storageRef.listAll();
-  // String url = '';
-  // for (var item in listResult.items) {
-  //   url = await item.getDownloadURL();
-  // }
-  // final player = AudioPlayer();
-  // await player.play(UrlSource(url));
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Initialize dependencies
   const storage = FlutterSecureStorage();
@@ -124,7 +119,7 @@ class MyApp extends StatelessWidget {
     sizeConfig.init(context);
 
     return MaterialApp(
-      title: 'Music Player',
+      title: Strings.appName,
       theme: ThemeData(
         // Define your theme here
         primarySwatch: Colors.blue,

@@ -16,41 +16,90 @@ import '../../../domain/entity/user.dart';
 import '../../playlist_detail_page/playlist_detail_screen.dart';
 import '../../song_detail_page/song_detail_screen.dart';
 
-class MainHomeScreen extends StatelessWidget {
+class MainHomeScreen extends StatefulWidget {
   const MainHomeScreen({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _MainHomeState();
+  }
+}
+
+class _MainHomeState extends State<MainHomeScreen> {
+  PlaylistFactory? listFactory;
+  Future<PaginatedResponse>? responseListenRecentlySong;
+  Future<PaginatedResponse>? responsePopularSong;
+  Future<PaginatedResponse>? responseNewReleaseSong;
+  Future<PaginatedResponse>? responseGenrePlaylist;
+  Future<PaginatedResponse>? responseSingerPlaylist;
+  User? user;
+
+  Future<void> _refresh() async {
+    responseListenRecentlySong = listFactory?.getList(
+        playListType: PlayListType.listenRecentlySong,
+        pageNumber: 0,
+        pageSize: Constants.pageSizeMainHomeView,
+        userId: user?.id);
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     LoginViewModel loginViewModel = Provider.of<LoginViewModel>(context);
-    User? user = loginViewModel.user;
+    user = loginViewModel.user;
 
-    return BaseScreen(() => Scaffold(
+    listFactory = Provider.of<PlaylistFactory>(context, listen: false);
+    responseListenRecentlySong = listFactory?.getList(
+        playListType: PlayListType.listenRecentlySong,
+        pageNumber: 0,
+        pageSize: Constants.pageSizeMainHomeView,
+        userId: user?.id);
+    responsePopularSong = listFactory?.getList(
+        playListType: PlayListType.popularSong,
+        pageNumber: 0,
+        pageSize: Constants.pageSizeMainHomeView,
+        userId: user?.id);
+    responseNewReleaseSong = listFactory?.getList(
+        playListType: PlayListType.newReleaseSong,
+        pageNumber: 0,
+        pageSize: Constants.pageSizeMainHomeView,
+        userId: user?.id);
+    responseGenrePlaylist = listFactory?.getList(
+        playListType: PlayListType.genrePlaylist,
+        pageNumber: 0,
+        pageSize: Constants.pageSizeMainHomeView,
+        userId: user?.id);
+    responseSingerPlaylist = listFactory?.getList(
+        playListType: PlayListType.singerPlaylist,
+        pageNumber: 0,
+        pageSize: Constants.pageSizeMainHomeView,
+        userId: user?.id);
+
+    return BaseScreen(() => RefreshIndicator(
+        onRefresh: _refresh,
+        child: Scaffold(
           body: SafeArea(
               child: SingleChildScrollView(
             child: Column(
               children: [
-                _buildList(context, PlayListType.newReleaseSong, user?.id),
                 if (user != null)
-                  _buildList(context, PlayListType.listenRecentlySong, user.id),
-                _buildList(context, PlayListType.popularSong, user?.id),
-                _buildList(context, PlayListType.genrePlaylist, user?.id),
-                _buildList(context, PlayListType.singerPlaylist, user?.id),
+                  _buildList(responseListenRecentlySong!,
+                      PlayListType.listenRecentlySong),
+                _buildList(responsePopularSong!, PlayListType.popularSong),
+                _buildList(
+                    responseNewReleaseSong!, PlayListType.newReleaseSong),
+                _buildList(responseGenrePlaylist!, PlayListType.genrePlaylist),
+                _buildList(
+                    responseSingerPlaylist!, PlayListType.singerPlaylist),
               ],
             ),
           )),
-        ));
+        )));
   }
 
   Widget _buildList(
-      BuildContext context, PlayListType playListType, int? userId) {
-    PlaylistFactory listFactory =
-        Provider.of<PlaylistFactory>(context, listen: false);
-    Future<PaginatedResponse> futureResponse = listFactory.getList(
-        playListType: playListType,
-        pageNumber: 0,
-        pageSize: Constants.pageSizeMainHomeView,
-        userId: userId);
-
+      Future<PaginatedResponse> futureResponse, PlayListType playListType) {
     return FutureBuilder<PaginatedResponse>(
       future: futureResponse,
       builder: (context, snapshot) {
@@ -62,77 +111,81 @@ class MainHomeScreen extends StatelessWidget {
           return const SizedBox.shrink();
         } else {
           PaginatedResponse response = snapshot.data!;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10, left: 10),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context)
-                        .push(AllItemScreen.route(playListType));
-                  },
-                  borderRadius: BorderRadius.circular(0),
-                  child: Row(
-                    children: [
-                      Text(
-                        playListType.title,
-                        style: TextStyle(
-                          fontSize: 18.w,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(width: 5.w),
-                      const Icon(Icons.arrow_forward),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: response.items.length,
-                    itemBuilder: (context, index) {
-                      dynamic item = response.items[index];
-                      if (item is Song) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: VerticalSongItem(
-                            song: item,
-                            onItemClick: () async {
-                              Playlist? playlist =
-                                  await listFactory.getPlaylistByPlayListType(
-                                      playListType, userId);
-
-                              if (context.mounted) {
-                                Navigator.of(context).push(
-                                    SongDetailScreen.route(
-                                        song: item, playlist: playlist));
-                              }
-                            },
-                          ),
-                        );
-                      } else if (item is Playlist) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: PlaylistItem(
-                              playlist: item,
-                              onItemClick: () {
-                                Navigator.of(context)
-                                    .push(PlaylistDetailScreen.route(item));
-                              }),
-                        );
-                      }
-                      return null;
+          if (response.totalItems <= 0) {
+            return const SizedBox.shrink();
+          } else {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10, left: 10),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context)
+                          .push(AllItemScreen.route(playListType));
                     },
+                    borderRadius: BorderRadius.circular(0),
+                    child: Row(
+                      children: [
+                        Text(
+                          playListType.title,
+                          style: TextStyle(
+                            fontSize: 18.w,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(width: 5.w),
+                        const Icon(Icons.arrow_forward),
+                      ],
+                    ),
                   ),
                 ),
-              )
-            ],
-          );
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: SizedBox(
+                    height: 200,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: response.items.length,
+                      itemBuilder: (context, index) {
+                        dynamic item = response.items[index];
+                        if (item is Song) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: VerticalSongItem(
+                              song: item,
+                              onItemClick: () async {
+                                Playlist? playlist = await listFactory
+                                    ?.getPlaylistByPlayListType(
+                                        playListType, user?.id);
+
+                                if (context.mounted) {
+                                  Navigator.of(context).push(
+                                      SongDetailScreen.route(
+                                          song: item, playlist: playlist));
+                                }
+                              },
+                            ),
+                          );
+                        } else if (item is Playlist) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: PlaylistItem(
+                                playlist: item,
+                                onItemClick: () {
+                                  Navigator.of(context)
+                                      .push(PlaylistDetailScreen.route(item));
+                                }),
+                          );
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                )
+              ],
+            );
+          }
         }
       },
     );
