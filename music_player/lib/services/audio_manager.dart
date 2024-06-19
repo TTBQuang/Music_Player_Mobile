@@ -2,7 +2,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 
-import '../layers/domain/entity/playlist.dart';
 import '../layers/presentation/song_detail_page/notifier/play_button_notifier.dart';
 import '../layers/presentation/song_detail_page/notifier/play_mode_button_notifier.dart';
 import '../layers/presentation/song_detail_page/notifier/progress_notifier.dart';
@@ -15,7 +14,7 @@ class AudioManager {
   final currentAuthorsNameNotifier = ValueNotifier<String>('');
   final currentSongArtNotifier = ValueNotifier<String>('');
   final backgroundColorNotifier =
-      ValueNotifier<List<Color>>([Colors.black, Colors.white]);
+      ValueNotifier<List<Color>>([Colors.black, Colors.grey]);
   final playModeButtonNotifier = PlayModeButtonNotifier();
   final currentPlaylistTitleNotifier = ValueNotifier<String>('');
   final currentPlaylistIdNotifier = ValueNotifier<int>(0);
@@ -24,7 +23,6 @@ class AudioManager {
 
   final AudioHandler _audioHandler;
   Function(int)? saveListenHistory;
-  Playlist? playlist;
 
   AudioManager(this._audioHandler) {
     _listenToPlaybackState();
@@ -40,7 +38,6 @@ class AudioManager {
       }
     });
   }
-
 
   void play() => _audioHandler.play();
 

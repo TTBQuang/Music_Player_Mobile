@@ -59,7 +59,7 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                     Constants.pageSizePlaylistDetailView)
                 .ceil();
 
-            final pageManager =
+            final audioManager =
                 Provider.of<AudioManager>(context, listen: false);
 
             return Scaffold(
@@ -109,10 +109,10 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                                     padding: const EdgeInsets.all(10),
                                     child: ValueListenableBuilder<int>(
                                       valueListenable:
-                                          pageManager.currentPlaylistIdNotifier,
+                                          audioManager.currentPlaylistIdNotifier,
                                       builder: (_, playlistId, __) {
                                         return ValueListenableBuilder(
-                                            valueListenable: pageManager
+                                            valueListenable: audioManager
                                                 .currentSongIdNotifier,
                                             builder: (_, songId, __) {
                                               return HorizontalSongItem(

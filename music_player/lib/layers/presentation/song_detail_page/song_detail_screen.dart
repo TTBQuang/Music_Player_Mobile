@@ -17,7 +17,7 @@ import 'package:music_player/utils/constants.dart';
 import 'package:provider/provider.dart';
 
 import '../../../services/audio_manager.dart';
-import '../../../utils/download_util.dart';
+import '../../../utils/file_utils.dart';
 import '../../../utils/playlist_factory.dart';
 import '../../../utils/size_config.dart';
 import '../../../utils/strings.dart';
@@ -57,7 +57,6 @@ class _SongDetailState extends State<SongDetailScreen>
     super.initState();
 
     _audioManager = Provider.of<AudioManager>(context, listen: false);
-    _audioManager.playlist = widget.playlist;
     _audioManager.saveListenHistory = saveListenHistory;
 
     // if user listen new song, load data
@@ -333,7 +332,7 @@ class _SongDetailState extends State<SongDetailScreen>
       case 1:
         String url = _audioManager.currentSongUrlNotifier.value;
         String name = _audioManager.currentSongNameNotifier.value;
-        DownloadUtils.startDownload(url, name, context);
+        FileUtils.startDownload(url, name, context);
         break;
     }
   }

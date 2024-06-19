@@ -5,7 +5,7 @@ import 'package:music_player/layers/domain/entity/playlist.dart';
 
 import '../../../../utils/size_config.dart';
 
-class BlurredHeader extends StatelessWidget{
+class BlurredHeader extends StatelessWidget {
   final Playlist playlist;
 
   const BlurredHeader(this.playlist, {super.key});
@@ -14,16 +14,22 @@ class BlurredHeader extends StatelessWidget{
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: SizeConfig.screenHeight / 4
-          + MediaQuery.of(context).padding.top  // Add padding for safe area
-          + 50, // Add padding below image
+      height: SizeConfig.screenHeight / 4 +
+          MediaQuery.of(context).padding.top // Add padding for safe area
+          +
+          50, // Add padding below image
       child: Stack(
         children: [
           Positioned.fill(
-            child: Image.network(
-              playlist.image,
-              fit: BoxFit.cover,
-            ),
+            child: playlist.image.isNotEmpty
+                ? Image.network(
+                    playlist.image,
+                    fit: BoxFit.cover,
+                  )
+                : Image.asset(
+                    'assets/image/logo.png',
+                    fit: BoxFit.cover,
+                  ),
           ),
           Positioned.fill(
             child: BackdropFilter(
@@ -35,8 +41,7 @@ class BlurredHeader extends StatelessWidget{
           ),
           SafeArea(
             child: Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

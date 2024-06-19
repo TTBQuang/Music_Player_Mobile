@@ -49,6 +49,9 @@ dependencies:
   dio: ^5.4.3+1
   on_audio_query: ^2.9.0
   permission_handler: ^11.3.1
+  media_store_plus: ^0.1.2
+  awesome_notifications: ^0.9.3+1
+  device_info_plus: ^10.1.0
   # firebase
   firebase_core: ^2.31.0
   firebase_storage: ^11.7.5

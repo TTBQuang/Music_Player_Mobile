@@ -1,8 +1,10 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:media_store_plus/media_store_plus.dart';
 import 'package:music_player/layers/data/repository/listen_history_repository_impl.dart';
 import 'package:music_player/layers/data/repository/playlist_repository_impl.dart';
 import 'package:music_player/layers/data/repository/search_history_repository_impl.dart';
@@ -21,6 +23,7 @@ import 'package:music_player/layers/presentation/main_page/main_viewmodel.dart';
 import 'package:music_player/layers/presentation/song_detail_page/song_detail_viewmodel.dart';
 import 'package:music_player/services/audio_handler.dart';
 import 'package:music_player/services/audio_manager.dart';
+import 'package:music_player/utils/constants.dart';
 import 'package:music_player/utils/playlist_factory.dart';
 import 'package:music_player/utils/size_config.dart';
 import 'package:music_player/utils/strings.dart';
@@ -35,6 +38,18 @@ import 'layers/presentation/sign_up_page/sign_up_viewmodel.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await MediaStore.ensureInitialized();
+  MediaStore.appFolder = "MediaStorePlugin";
+
+  AwesomeNotifications().initialize(
+      null,
+      [
+        NotificationChannel(
+            channelKey: Constants.channelKey,
+            channelName: 'Music Player notifications',
+            channelDescription: 'Notification channel for Music Player')
+      ],
+      debug: true);
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

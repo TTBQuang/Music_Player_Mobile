@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../utils/constants.dart';
-import '../../../../utils/strings.dart';
-import '../../../domain/entity/singer.dart';
+import '../../../../utils/file_utils.dart';
 import '../../../domain/entity/song.dart';
 
 class HorizontalSongItem extends StatelessWidget {
@@ -11,7 +10,10 @@ class HorizontalSongItem extends StatelessWidget {
   final VoidCallback onItemClick;
 
   const HorizontalSongItem(
-      {super.key, required this.isPlaying, required this.song, required this.onItemClick});
+      {super.key,
+      required this.isPlaying,
+      required this.song,
+      required this.onItemClick});
 
   @override
   Widget build(BuildContext context) {
@@ -43,18 +45,13 @@ class HorizontalSongItem extends StatelessWidget {
                 ],
               ),
             ),
-            PopupMenuButton<int>(
-              icon: const Icon(
-                Icons.more_vert,
-                color: Colors.white,
-              ),
-              onSelected: (item) {},
-              itemBuilder: (context) => [
-                const PopupMenuItem<int>(
-                    value: 0, child: Text(Strings.addToFavorites)),
-                const PopupMenuItem<int>(value: 1, child: Text(Strings.download)),
-              ],
-            ),
+            IconButton(
+                onPressed: () {
+                  String url = song.linkSong ?? '';
+                  String name = song.name ?? '';
+                  FileUtils.startDownload(url, name, context);
+                },
+                icon: const Icon(Icons.download))
           ],
         ),
       ),

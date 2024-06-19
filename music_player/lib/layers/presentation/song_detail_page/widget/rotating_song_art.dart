@@ -16,7 +16,6 @@ class _RotatingSongArtState extends State<RotatingSongArt> with SingleTickerProv
   @override
   void initState() {
     super.initState();
-    print('object14');
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 15),

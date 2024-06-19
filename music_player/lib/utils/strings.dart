@@ -43,6 +43,14 @@ class Strings {
   static const String downloadedSong = 'Nhạc đã tải';
   static const String goToSetting = 'Đi đến Cài đặt';
   static const String explainPermissionTitle = 'Cấp quyền truy cập';
+  static const String deleteFail = 'Xóa thất bại';
   static const String explainAudioPermissionContent =
       'Ứng dụng cần được cấp quyền truy cập vào các tệp nhạc và âm thanh của thiết bị để thực hiện chức năng này';
+  static const String deleteConfirmationContent = 'Bạn có chắc chắn muốn xóa không ?';
+  static const String deleteConfirmationTitle = 'Xóa tập tin';
+  static const String yes = 'Có';
+  static const String no = 'Không';
+  static const String downloadingNotification = 'Đang download file';
+  static const String downloadSuccessNotification = 'Download thành công file';
+  static const String downloadFailNotification = 'Download thất bại file';
 }
