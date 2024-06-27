@@ -13,9 +13,9 @@ class PlayModeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pageManager = Provider.of<AudioManager>(context, listen: false);
+    final audioManager = Provider.of<AudioManager>(context, listen: false);
     return ValueListenableBuilder<PlayModeState>(
-        valueListenable: pageManager.playModeButtonNotifier,
+        valueListenable: audioManager.playModeButtonNotifier,
         builder: (_, state, __) {
           return IconButton(
             icon: Icon(state.icon),

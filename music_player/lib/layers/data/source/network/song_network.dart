@@ -7,4 +7,10 @@ abstract class SongNetwork{
   Future<PaginatedResponseDto> getRecentListenSongs(int userId, int pageNumber, int pageSize);
   Future<List<SongDto>> getSongsInPlaylist(int playlistId, int pageNumber, int pageSize);
   Future<PaginatedResponseDto> getSongByName(String name, int pageNumber, int pageSize);
+  Future<SongDto> getSongById(int id);
+  Future<void> likeSong(int userId, int songId);
+  Future<void> unlikeSong(int userId, int songId);
+  Future<void> saveSong(int userId, int songId);
+  Future<void> removeSongFromFavorite(int userId, int songId);
+  Future<List<SongDto>> getFavoriteSongs(int userId);
 }

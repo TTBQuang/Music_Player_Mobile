@@ -11,6 +11,7 @@ class AllItemViewModel extends ChangeNotifier {
 
   AllItemViewModel(this.listFactory);
 
+  // fetch new page of playlistType
   Future<void> fetchNewPage(PlayListType playListType, int pageNumber, int? userId) async {
     int nRow = Constants.rowPerPageAllItemScreen;
     int nCol = (SizeConfig.screenWidth / 175).floor();

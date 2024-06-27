@@ -10,7 +10,7 @@ import '../../../../utils/strings.dart';
 import '../../../domain/entity/user.dart';
 
 class UserNetworkImpl implements UserNetwork {
-  final String baseUrl = 'http://192.168.1.14:8080/user';
+  final String baseUrl = 'http://192.168.1.11:8080/user';
 
   @override
   Future<bool> registerUser(String username, String password) async {
@@ -27,7 +27,7 @@ class UserNetworkImpl implements UserNetwork {
               'password': password,
             }),
           )
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         return true;
@@ -43,6 +43,9 @@ class UserNetworkImpl implements UserNetwork {
     } on TimeoutException {
       // Handle timeout errors
       throw Exception(Strings.timeout);
+    } catch (e) {
+      // Handle any other errors
+      throw Exception('An error occurred: $e');
     }
   }
 
@@ -61,7 +64,7 @@ class UserNetworkImpl implements UserNetwork {
               'password': password,
             }),
           )
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         // User registered successfully
@@ -79,6 +82,9 @@ class UserNetworkImpl implements UserNetwork {
     } on TimeoutException {
       // Handle timeout errors
       throw Exception(Strings.timeout);
+    } catch (e) {
+      // Handle any other errors
+      throw Exception('An error occurred: $e');
     }
   }
 
@@ -94,7 +100,7 @@ class UserNetworkImpl implements UserNetwork {
         },
         body: jsonEncode(
             userDto.toJson()),
-      ).timeout(const Duration(seconds: 5));
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         return true;
@@ -107,6 +113,9 @@ class UserNetworkImpl implements UserNetwork {
     } on TimeoutException {
       // Handle timeout errors
       throw Exception(Strings.timeout);
+    } catch (e) {
+      // Handle any other errors
+      throw Exception('An error occurred: $e');
     }
   }
 }

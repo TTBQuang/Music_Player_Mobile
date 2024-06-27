@@ -86,6 +86,7 @@ class _ProfileDialogState extends State<ProfileDialog> {
                 Expanded(
                   child: FilledButton(
                     onPressed: () async {
+                      // update display name of user
                       bool isSuccess = await mainViewModel.updateUser(userTmp!);
                       if (isSuccess) {
                         loginViewModel.user = userTmp;

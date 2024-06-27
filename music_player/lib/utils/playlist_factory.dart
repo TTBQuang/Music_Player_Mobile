@@ -1,16 +1,18 @@
 import 'package:music_player/layers/domain/entity/paginated_response.dart';
 import 'package:music_player/layers/domain/repository/playlist_repository.dart';
 import 'package:music_player/layers/domain/repository/song_repository.dart';
-import 'package:music_player/layers/presentation/main_page/widget/main_home_screen.dart';
 import 'package:music_player/utils/constants.dart';
 import 'package:music_player/utils/strings.dart';
 
+import '../layers/data/dto/song_dto.dart';
 import '../layers/domain/entity/playlist.dart';
 import '../layers/domain/entity/song.dart';
 
+// get List<Song> and Playlist base on PlayListType in main screen
 enum PlayListType {
   newReleaseSong(Strings.newRelease, Constants.newSongsPlaylistId),
-  listenRecentlySong(Strings.listenRecently, Constants.recentListenSongsPlaylistId),
+  listenRecentlySong(
+      Strings.listenRecently, Constants.recentListenSongsPlaylistId),
   popularSong(Strings.popular, Constants.popularSongsPlaylistId),
   genrePlaylist(Strings.genre, null),
   singerPlaylist(Strings.singer, null);
@@ -25,7 +27,8 @@ class PlaylistFactory {
   final SongRepository songRepository;
   final PlaylistRepository playlistRepository;
 
-  PlaylistFactory({required this.songRepository, required this.playlistRepository});
+  PlaylistFactory(
+      {required this.songRepository, required this.playlistRepository});
 
   Future<PaginatedResponse> getNewSongs(int pageNumber, int pageSize) {
     return songRepository.getNewSongs(pageNumber, pageSize);
@@ -49,7 +52,10 @@ class PlaylistFactory {
   }
 
   Future<PaginatedResponse> getList(
-  {required PlayListType playListType, required int pageNumber, required int pageSize, required int? userId}) {
+      {required PlayListType playListType,
+      required int pageNumber,
+      required int pageSize,
+      required int? userId}) {
     switch (playListType) {
       case PlayListType.newReleaseSong:
         return getNewSongs(pageNumber, pageSize);
@@ -65,7 +71,8 @@ class PlaylistFactory {
     }
   }
 
-  Future<Playlist?> getPlaylistByPlayListType(PlayListType playListType, int? userId) async {
+  Future<Playlist?> getPlaylistByPlayListType(
+      PlayListType playListType, int? userId) async {
     PaginatedResponse? value;
     Playlist? playlist;
 
@@ -81,9 +88,15 @@ class PlaylistFactory {
           name: playListType.title,
           image: '',
           totalItems: value.totalItems);
-      playlist.songList
-          .addAll(value.items as List<Song>);
+
+      List<SongDto> songDtoList = value.items as List<SongDto>;
+      List<Song> songList = [];
+      for (SongDto songDto in songDtoList) {
+        songList.add(Song.fromSongDto(songDto, userId));
+      }
+      playlist.songList.addAll(songList);
     }
+
     return playlist;
   }
 }

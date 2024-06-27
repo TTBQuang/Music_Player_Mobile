@@ -45,8 +45,8 @@ class _PlayDownloadSongState extends State<PlayDownloadSongScreen> {
     _audioManager.saveListenHistory = null;
 
     // if user listen new song, load data
-    if (_audioManager.currentPlaylistIdNotifier.value != widget.playlist.id ||
-        _audioManager.currentSongIdNotifier.value != widget.song.id) {
+    if (_audioManager.playlistIdNotifier.value != widget.playlist.id ||
+        _audioManager.songIdNotifier.value != widget.song.id) {
       _initAsync();
     }
   }

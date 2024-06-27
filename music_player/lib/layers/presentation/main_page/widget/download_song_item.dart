@@ -56,6 +56,7 @@ class DownloadSongItem extends StatelessWidget {
     );
   }
 
+  // show dialog asking the user if they are sure they want to delete
   void _showDeleteConfirmationDialog(BuildContext context, String uri) {
     showDialog(
       context: context,

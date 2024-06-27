@@ -38,6 +38,7 @@ class SearchViewModel extends ChangeNotifier {
       SearchType searchType, String name, int pageNumber, int pageSize) async {
     late PaginatedResponse response;
 
+    // get items list base on searchType (song or singer)
     switch (searchType) {
       case SearchType.song:
         response =

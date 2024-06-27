@@ -10,19 +10,23 @@ class AudioManager {
   final playButtonNotifier = PlayButtonNotifier();
   final progressNotifier = ProgressNotifier();
   final isSongInPlaylistNotifier = ValueNotifier<bool>(false);
-  final currentSongNameNotifier = ValueNotifier<String>('');
-  final currentAuthorsNameNotifier = ValueNotifier<String>('');
-  final currentSongArtNotifier = ValueNotifier<String>('');
+  final songNameNotifier = ValueNotifier<String>('');
+  final authorsNameNotifier = ValueNotifier<String>('');
+  final songArtNotifier = ValueNotifier<String>('');
   final backgroundColorNotifier =
       ValueNotifier<List<Color>>([Colors.black, Colors.grey]);
   final playModeButtonNotifier = PlayModeButtonNotifier();
-  final currentPlaylistTitleNotifier = ValueNotifier<String>('');
-  final currentPlaylistIdNotifier = ValueNotifier<int>(0);
-  final currentSongIdNotifier = ValueNotifier<int>(0);
-  final currentSongUrlNotifier = ValueNotifier<String>('');
+  final playlistTitleNotifier = ValueNotifier<String>('');
+  final playlistIdNotifier = ValueNotifier<int>(0);
+  final songIdNotifier = ValueNotifier<int>(0);
+  final songUrlNotifier = ValueNotifier<String>('');
+  final isSongLikedNotifier = ValueNotifier<bool>(false);
+  final isSongSavedNotifier = ValueNotifier<bool>(false);
+  final numberOfLikesNotifier = ValueNotifier<int>(0);
 
   final AudioHandler _audioHandler;
   Function(int)? saveListenHistory;
+  Function(int)? loadSong;
 
   AudioManager(this._audioHandler) {
     _listenToPlaybackState();
@@ -31,10 +35,12 @@ class AudioManager {
     _listenToTotalDuration();
     _listenToChangesInSong();
 
-    // if current song changes, call callback to save listen history to database
-    currentSongIdNotifier.addListener((){
-      if (saveListenHistory != null){
-        saveListenHistory!(currentSongIdNotifier.value);
+    songIdNotifier.addListener(() async {
+      if (saveListenHistory != null) {
+        saveListenHistory!(songIdNotifier.value);
+      }
+      if (loadSong != null) {
+        await loadSong!(songIdNotifier.value);
       }
     });
   }
@@ -106,13 +112,13 @@ class AudioManager {
 
   void _listenToChangesInSong() {
     _audioHandler.mediaItem.listen((mediaItem) {
-      currentSongNameNotifier.value = mediaItem?.title ?? '';
-      currentAuthorsNameNotifier.value = mediaItem?.artist ?? '';
-      currentSongArtNotifier.value = mediaItem?.artUri.toString() ?? '';
-      currentPlaylistTitleNotifier.value = mediaItem?.album ?? '';
-      currentPlaylistIdNotifier.value = mediaItem?.extras?['id_playlist'] ?? 0;
-      currentSongIdNotifier.value = int.parse(mediaItem?.id ?? '0');
-      currentSongUrlNotifier.value = mediaItem?.extras!['url'] ?? '';
+      songNameNotifier.value = mediaItem?.title ?? '';
+      authorsNameNotifier.value = mediaItem?.artist ?? '';
+      songArtNotifier.value = mediaItem?.artUri.toString() ?? '';
+      playlistTitleNotifier.value = mediaItem?.album ?? '';
+      playlistIdNotifier.value = mediaItem?.extras?['id_playlist'] ?? 0;
+      songIdNotifier.value = int.parse(mediaItem?.id ?? '0');
+      songUrlNotifier.value = mediaItem?.extras!['url'] ?? '';
       _updateSkipButtons();
       _updateBackgroundColor(mediaItem);
     });

@@ -5,6 +5,8 @@ import 'package:music_player/layers/presentation/login_page/login_viewmodel.dart
 import 'package:music_player/layers/presentation/song_detail_page/song_detail_viewmodel.dart';
 import 'package:music_player/layers/presentation/song_detail_page/widget/audio_progress_bar.dart';
 import 'package:music_player/layers/presentation/song_detail_page/widget/authors_name.dart';
+import 'package:music_player/layers/presentation/song_detail_page/widget/comment_bottom_sheet.dart';
+import 'package:music_player/layers/presentation/song_detail_page/widget/like_icon_button.dart';
 import 'package:music_player/layers/presentation/song_detail_page/widget/next_song_btn.dart';
 import 'package:music_player/layers/presentation/song_detail_page/widget/play_button.dart';
 import 'package:music_player/layers/presentation/song_detail_page/widget/play_mode_button.dart';
@@ -23,8 +25,8 @@ import '../../../utils/size_config.dart';
 import '../../../utils/strings.dart';
 import '../../domain/entity/playlist.dart';
 import '../../domain/entity/song.dart';
-import '../../domain/entity/user.dart';
 import '../base_screen.dart';
+import '../login_page/login_screen.dart';
 
 class SongDetailScreen extends StatefulWidget {
   final Song song;
@@ -47,21 +49,28 @@ class SongDetailScreen extends StatefulWidget {
   }
 }
 
-class _SongDetailState extends State<SongDetailScreen>
-    with SingleTickerProviderStateMixin {
+class _SongDetailState extends State<SongDetailScreen> {
   late final AudioManager _audioManager;
-  User? user;
+  SongDetailViewModel? songDetailViewModel;
+  LoginViewModel? loginViewModel;
 
   @override
   void initState() {
     super.initState();
 
     _audioManager = Provider.of<AudioManager>(context, listen: false);
+    // save listen history when listen new song
     _audioManager.saveListenHistory = saveListenHistory;
+    // reload like, save when listen new song
+    _audioManager.loadSong = loadSong;
+
+    loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    // add listener when user login in this screen
+    loginViewModel?.addListener(_onUserChange);
 
     // if user listen new song, load data
-    if (_audioManager.currentPlaylistIdNotifier.value != widget.playlist?.id ||
-        _audioManager.currentSongIdNotifier.value != widget.song.id) {
+    if (_audioManager.playlistIdNotifier.value != widget.playlist?.id ||
+        _audioManager.songIdNotifier.value != widget.song.id) {
       _initAsync();
     }
   }
@@ -70,48 +79,66 @@ class _SongDetailState extends State<SongDetailScreen>
   void saveListenHistory(int songId) {
     final viewModel = Provider.of<SongDetailViewModel>(context, listen: false);
 
-    if (user != null) {
+    if (loginViewModel?.user != null) {
       viewModel.saveListenHistory(ListenHistory(
           id: null,
-          user: user!,
+          user: loginViewModel!.user!,
           song: Song(
               id: songId,
               name: null,
               image: null,
               linkSong: null,
               releaseDate: null,
-              singers: null),
+              singers: null,
+              isLiked: null,
+              isSaved: null,
+              numberOfUserLike: null),
           time: DateTime.now()));
     }
   }
 
+  // load info of a song
+  Future<void> loadSong(int songId) async {
+    songDetailViewModel =
+        Provider.of<SongDetailViewModel>(context, listen: false);
+    Song? song = await songDetailViewModel?.getSongById(
+        _audioManager.songIdNotifier.value, loginViewModel!.user?.id);
+    _audioManager.isSongSavedNotifier.value = song?.isSaved ?? false;
+    _audioManager.isSongLikedNotifier.value = song?.isLiked ?? false;
+    _audioManager.numberOfLikesNotifier.value = song?.numberOfUserLike ?? 0;
+  }
+
   // load data
   Future<void> _initAsync() async {
-    final viewModel = Provider.of<SongDetailViewModel>(context, listen: false);
-    final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
-    user = loginViewModel.user;
+    songDetailViewModel =
+        Provider.of<SongDetailViewModel>(context, listen: false);
 
     // reset playlist when user listen to new song
-    viewModel.playlist = null;
+    songDetailViewModel?.playlist = null;
 
     if (!PlayListType.values
         .any((type) => type.id != null && type.id == widget.playlist?.id)) {
       // if user don't choose song in three category in main screen
-      await viewModel.getALlSongsInPlaylist(widget.playlist);
+      if (widget.playlist?.id == Constants.favoriteSongsPlaylistId) {
+        // if user choose song in favorite song page
+        songDetailViewModel?.playlist = widget.playlist?.clone();
+      } else {
+        await songDetailViewModel?.getALlSongsInPlaylist(widget.playlist);
+      }
     } else {
       // if user choose song in three category in main screen
-      viewModel.playlist = widget.playlist?.clone();
+      songDetailViewModel?.playlist = widget.playlist?.clone();
     }
 
     // Create MediaItems
-    final mediaItems = (viewModel.playlist?.songList
+    final mediaItems = (songDetailViewModel?.playlist?.songList
             .map((song) => MediaItem(
                   id: song.id.toString(),
                   title: song.name ?? '',
                   artist: song.getSingerNames(),
                   artUri:
                       Uri.parse(song.image ?? Constants.defaultNetworkImage),
-                  album: viewModel.playlist?.name,
+                  album: songDetailViewModel?.playlist?.name,
                   extras: {
                     'url': song.linkSong,
                     'id_playlist': widget.playlist?.id
@@ -144,12 +171,26 @@ class _SongDetailState extends State<SongDetailScreen>
     _audioManager.addQueueItems(mediaItems);
 
     // Play the selected song
-    if (viewModel.playlist == null) {
+    if (songDetailViewModel?.playlist == null) {
       playSelectedSong(0);
     } else {
-      int index = viewModel.playlist!.songList
-          .indexWhere((item) => item.id == widget.song.id);
+      int index = songDetailViewModel?.playlist!.songList
+              .indexWhere((item) => item.id == widget.song.id) ??
+          0;
       playSelectedSong(index);
+    }
+  }
+
+  @override
+  void dispose() {
+    loginViewModel?.removeListener(_onUserChange);
+    super.dispose();
+  }
+
+  void _onUserChange() {
+    // load song to update like and save of song
+    if (loginViewModel?.user != null) {
+      loadSong(_audioManager.songIdNotifier.value);
     }
   }
 
@@ -182,18 +223,33 @@ class _SongDetailState extends State<SongDetailScreen>
                   },
                 ),
                 actions: [
-                  PopupMenuButton<int>(
-                    icon: const Icon(
-                      Icons.more_vert,
-                      color: Colors.white,
-                    ),
-                    onSelected: (item) => _onSelected(context, item),
-                    itemBuilder: (context) => [
-                      const PopupMenuItem<int>(
-                          value: 0, child: Text(Strings.addToFavorites)),
-                      const PopupMenuItem<int>(
-                          value: 1, child: Text(Strings.download)),
-                    ],
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _audioManager.isSongSavedNotifier,
+                    builder: (context, isSaved, _) {
+                      return PopupMenuButton<int>(
+                        icon: const Icon(
+                          Icons.more_vert,
+                          color: Colors.white,
+                        ),
+                        onSelected: (item) => _onSelected(context, item),
+                        itemBuilder: (context) => [
+                          const PopupMenuItem<int>(
+                            value: Constants.downloadOption,
+                            child: Text(Strings.download),
+                          ),
+                          PopupMenuItem<int>(
+                            value: Constants.saveFavoriteOption,
+                            child: Text(isSaved
+                                ? Strings.removeFromFavorites
+                                : Strings.addToFavorites),
+                          ),
+                          const PopupMenuItem<int>(
+                            value: Constants.seeCommentOption,
+                            child: Text(Strings.seeComment),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
@@ -233,75 +289,21 @@ class _SongDetailState extends State<SongDetailScreen>
                               PreviousSongButton(iconSize),
                               PlayButton(iconSize),
                               NextSongButton(iconSize),
-                              IconButton(
-                                icon: const Icon(Icons.thumb_up),
-                                color: Colors.white,
+                              LikeIconButton(
                                 iconSize: iconSize,
-                                onPressed: () {},
+                                updateLikeDatabase: () {
+                                  if (loginViewModel!.user?.id != null) {
+                                    likeOrUnlikeSong(viewModel);
+                                  } else {
+                                    Navigator.of(context).push(
+                                      LoginScreen.route(canNavigateBack: true),
+                                    );
+                                  }
+                                },
                               ),
                             ],
                           ),
                           const Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              padding: const EdgeInsets.all(16.0),
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(12.0),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black26,
-                                    blurRadius: 20.0,
-                                    offset: Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: const Column(
-                                children: [
-                                  Text(
-                                    Strings.comment,
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        backgroundImage: AssetImage(
-                                            'assets/image/person.png'),
-                                      ),
-                                      SizedBox(width: 10),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'User Name',
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            SizedBox(height: 5),
-                                            Text(
-                                              'This is a comment. It looks really nice!',
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -309,6 +311,27 @@ class _SongDetailState extends State<SongDetailScreen>
                 },
               ));
         }));
+  }
+
+  void likeOrUnlikeSong(SongDetailViewModel viewModel) {
+    _audioManager.isSongLikedNotifier.value =
+        !_audioManager.isSongLikedNotifier.value;
+
+    // increase or decrease the number of users who like this song
+    if (_audioManager.isSongLikedNotifier.value) {
+      _audioManager.numberOfLikesNotifier.value++;
+    } else {
+      _audioManager.numberOfLikesNotifier.value--;
+    }
+
+    // update databse
+    if (_audioManager.isSongLikedNotifier.value) {
+      viewModel.likeSong(
+          _audioManager.songIdNotifier.value, loginViewModel!.user!.id);
+    } else {
+      viewModel.unlikeSong(
+          _audioManager.songIdNotifier.value, loginViewModel!.user!.id);
+    }
   }
 
   void showPlayModeDialog(BuildContext context) {
@@ -327,13 +350,47 @@ class _SongDetailState extends State<SongDetailScreen>
 
   void _onSelected(BuildContext context, int item) {
     switch (item) {
-      case 0:
-        break;
-      case 1:
-        String url = _audioManager.currentSongUrlNotifier.value;
-        String name = _audioManager.currentSongNameNotifier.value;
+      case Constants.downloadOption:
+        String url = _audioManager.songUrlNotifier.value;
+        String name = _audioManager.songNameNotifier.value;
         FileUtils.startDownload(url, name, context);
         break;
+      case Constants.saveFavoriteOption:
+        if (loginViewModel!.user?.id != null) {
+          saveOrRemoveSong();
+        } else {
+          Navigator.of(context).push(
+            LoginScreen.route(canNavigateBack: true),
+          );
+        }
+        break;
+      case Constants.seeCommentOption:
+        // show comment bottom sheet
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          builder: (context) {
+            return FractionallySizedBox(
+              heightFactor: 0.8, //The height covers 80% of the screen
+              child: CommentBottomSheet(songId: _audioManager.songIdNotifier.value,),
+            );
+          },
+        );
+        break;
+    }
+  }
+
+  // save or remove song from favorite
+  void saveOrRemoveSong() {
+    _audioManager.isSongSavedNotifier.value =
+        !_audioManager.isSongSavedNotifier.value;
+
+    if (_audioManager.isSongSavedNotifier.value) {
+      songDetailViewModel?.saveSong(
+          _audioManager.songIdNotifier.value, loginViewModel!.user!.id);
+    } else {
+      songDetailViewModel?.removeSongFromFavorite(
+          _audioManager.songIdNotifier.value, loginViewModel!.user!.id);
     }
   }
 }

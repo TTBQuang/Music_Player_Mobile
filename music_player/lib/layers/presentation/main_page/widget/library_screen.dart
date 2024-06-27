@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:music_player/layers/presentation/base_screen.dart';
 import 'package:music_player/utils/size_config.dart';
 import 'package:music_player/utils/strings.dart';
 
 import 'download_song_list.dart';
+import 'favorite_song_list.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -15,8 +15,8 @@ class LibraryScreen extends StatefulWidget {
 }
 
 class _LibraryState extends State<LibraryScreen> {
-  bool isText1Underlined = true;
-  bool isText2Underlined = false;
+  bool isTextDownloadUnderlined = true;
+  bool isTextFavoriteUnderlined = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,18 +32,18 @@ class _LibraryState extends State<LibraryScreen> {
                       Strings.downloadedSong,
                       style: TextStyle(
                         fontSize: 15.w,
-                        fontWeight: isText1Underlined
+                        fontWeight: isTextDownloadUnderlined
                             ? FontWeight.bold
                             : FontWeight.normal,
-                        color: isText1Underlined
+                        color: isTextDownloadUnderlined
                             ? Theme.of(context).colorScheme.primary
                             : Theme.of(context).colorScheme.secondary,
                       ),
                     ),
                     onPressed: () {
                       setState(() {
-                        isText1Underlined = true;
-                        isText2Underlined = false;
+                        isTextDownloadUnderlined = true;
+                        isTextFavoriteUnderlined = false;
                       });
                     },
                   ),
@@ -51,21 +51,21 @@ class _LibraryState extends State<LibraryScreen> {
                 Expanded(
                   child: TextButton(
                     child: Text(
-                      Strings.savedSong,
+                      Strings.favoriteSong,
                       style: TextStyle(
                         fontSize: 15.w,
-                        fontWeight: isText2Underlined
+                        fontWeight: isTextFavoriteUnderlined
                             ? FontWeight.bold
                             : FontWeight.normal,
-                        color: isText2Underlined
+                        color: isTextFavoriteUnderlined
                             ? Theme.of(context).colorScheme.primary
                             : Theme.of(context).colorScheme.secondary,
                       ),
                     ),
                     onPressed: () {
                       setState(() {
-                        isText1Underlined = false;
-                        isText2Underlined = true;
+                        isTextDownloadUnderlined = false;
+                        isTextFavoriteUnderlined = true;
                       });
                     },
                   ),
@@ -75,8 +75,8 @@ class _LibraryState extends State<LibraryScreen> {
             Expanded(
               child: Stack(
                 children: [
-                  if (isText1Underlined) const DownloadSongList(),
-                  if (isText2Underlined) const FavoriteSongList(),
+                  if (isTextDownloadUnderlined) const DownloadSongList(),
+                  if (isTextFavoriteUnderlined) const FavoriteSongList(),
                 ],
               ),
             ),
@@ -84,15 +84,5 @@ class _LibraryState extends State<LibraryScreen> {
         ),
       ),
     );
-  }
-}
-
-class FavoriteSongList extends StatelessWidget {
-  const FavoriteSongList({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Here you can add your own implementation for the FavoriteSongList
-    return const Center(child: Text('Favorite Songs'));
   }
 }

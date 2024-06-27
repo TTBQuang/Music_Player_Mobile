@@ -1,24 +1,16 @@
 import 'package:flutter/cupertino.dart';
-import 'package:music_player/layers/domain/entity/playlist.dart';
-import 'package:music_player/utils/constants.dart';
 import 'package:music_player/utils/error_message_extension.dart';
 
-import '../../domain/entity/paginated_response.dart';
 import '../../domain/entity/song.dart';
 import '../../domain/entity/user.dart';
-import '../../domain/repository/playlist_repository.dart';
 import '../../domain/repository/song_repository.dart';
 import '../../domain/repository/user_repository.dart';
 
 class MainViewModel extends ChangeNotifier {
   final UserRepository userRepository;
   final SongRepository songRepository;
-  final PlaylistRepository playlistRepository;
 
-  MainViewModel(
-      {required this.userRepository,
-      required this.songRepository,
-      required this.playlistRepository});
+  MainViewModel({required this.userRepository, required this.songRepository});
 
   String errorMessage = '';
 
@@ -33,5 +25,13 @@ class MainViewModel extends ChangeNotifier {
       errorMessage = e.toString().extractErrorMessage();
       return false;
     }
+  }
+
+  Future<List<Song>> getFavoriteSongs(int userId) {
+    return songRepository.getFavoriteSong(userId);
+  }
+
+  Future<void> removeSongFromFavorite(int songId, int userId) async {
+    songRepository.removeSongFromFavorite(songId, userId);
   }
 }

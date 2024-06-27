@@ -10,7 +10,7 @@ import '../../../../utils/strings.dart';
 import '../../dto/search_history_dto.dart';
 
 class SearchHistoryNetworkImpl extends SearchHistoryNetwork {
-  final String baseUrl = 'http://192.168.1.14:8080/search_history';
+  final String baseUrl = 'http://192.168.1.11:8080/search_history';
 
   @override
   Future<List<SearchHistoryDto>> getSearchHistory(
@@ -35,6 +35,9 @@ class SearchHistoryNetworkImpl extends SearchHistoryNetwork {
     } on TimeoutException {
       // Handle timeout errors
       throw Exception(Strings.timeout);
+    } catch (e) {
+      // Handle any other errors
+      throw Exception('An error occurred: $e');
     }
   }
 

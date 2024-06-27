@@ -10,9 +10,9 @@ class AudioProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pageManager = Provider.of<AudioManager>(context, listen: false);
+    final audioManager = Provider.of<AudioManager>(context, listen: false);
     return ValueListenableBuilder<ProgressBarState>(
-      valueListenable: pageManager.progressNotifier,
+      valueListenable: audioManager.progressNotifier,
       builder: (_, value, __) {
         return ProgressBar(
           timeLabelTextStyle: const TextStyle(color: Colors.white),
@@ -23,7 +23,7 @@ class AudioProgressBar extends StatelessWidget {
           progress: value.current,
           buffered: value.buffered,
           total: value.total,
-          onSeek: pageManager.seek,
+          onSeek: audioManager.seek,
         );
       },
     );

@@ -9,9 +9,9 @@ class PreviousSongButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pageManager = Provider.of<AudioManager>(context, listen: false);
+    final audioManager = Provider.of<AudioManager>(context, listen: false);
     return ValueListenableBuilder<bool>(
-      valueListenable: pageManager.isSongInPlaylistNotifier,
+      valueListenable: audioManager.isSongInPlaylistNotifier,
       builder: (_, isInPlaylist, __) {
         return IconButton(
           iconSize: iconSize,
@@ -19,7 +19,7 @@ class PreviousSongButton extends StatelessWidget {
           icon: const Icon(Icons.skip_previous),
           onPressed: () {
             if (isInPlaylist) {
-              pageManager.previous();
+              audioManager.previous();
             }
           },
         );

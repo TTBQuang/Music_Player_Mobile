@@ -1,7 +1,10 @@
 import '../../domain/entity/paginated_response.dart';
 
-class PaginatedResponseDto extends PaginatedResponse {
-  PaginatedResponseDto({required super.items, required super.totalItems});
+class PaginatedResponseDto {
+  List<dynamic> items;
+  int totalItems;
+
+  PaginatedResponseDto({required this.items, required this.totalItems});
 
   factory PaginatedResponseDto.fromJson(Map<String, dynamic> json) {
     return PaginatedResponseDto(

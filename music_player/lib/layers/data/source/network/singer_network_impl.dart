@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 import '../../../../utils/strings.dart';
 
 class SingerNetworkImpl extends SingerNetwork{
-  final String baseUrl = 'http://192.168.1.14:8080/singer';
+  final String baseUrl = 'http://192.168.1.11:8080/singer';
 
   @override
   Future<PaginatedResponseDto> getSingerByName(String name, int pageNumber, int pageSize) async {
@@ -40,6 +40,9 @@ class SingerNetworkImpl extends SingerNetwork{
     } on TimeoutException {
       // Handle timeout errors
       throw Exception(Strings.timeout);
+    } catch (e) {
+      // Handle any other errors
+      throw Exception('An error occurred: $e');
     }
   }
 }

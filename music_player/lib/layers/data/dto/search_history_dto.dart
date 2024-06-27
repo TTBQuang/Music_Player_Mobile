@@ -3,9 +3,15 @@ import 'dart:convert';
 import 'package:music_player/layers/data/dto/user_dto.dart';
 
 import '../../domain/entity/search_history.dart';
+import '../../domain/entity/user.dart';
 
-class SearchHistoryDto extends SearchHistory{
-  SearchHistoryDto({required super.id, required super.user, required super.query, required super.time});
+class SearchHistoryDto {
+  int? id;
+  UserDto user;
+  String query;
+  DateTime time;
+
+  SearchHistoryDto({required this.id, required this.user, required this.query, required this.time});
 
   factory SearchHistoryDto.fromJson(Map<String, dynamic> json) {
     return SearchHistoryDto(
@@ -18,7 +24,7 @@ class SearchHistoryDto extends SearchHistory{
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'user': (user as UserDto).toJson(),
+    'user': user.toJson(),
     'query': query,
     'time': time.toIso8601String(),
   };
@@ -26,7 +32,7 @@ class SearchHistoryDto extends SearchHistory{
   factory SearchHistoryDto.fromSearchHistory(SearchHistory searchHistory) {
     return SearchHistoryDto(
       id: searchHistory.id,
-      user: searchHistory.user,
+      user: UserDto.fromUser(searchHistory.user),
       query: searchHistory.query,
       time: searchHistory.time
     );

@@ -10,13 +10,13 @@ import '../../../../utils/strings.dart';
 import '../../dto/paginated_response_dto.dart';
 
 class PlaylistNetworkImpl extends PlaylistNetwork{
-  final String baseUrl = 'http://192.168.1.14:8080/playlist';
+  final String baseUrl = 'http://192.168.1.11:8080/playlist';
 
   @override
   Future<PaginatedResponseDto> getGenrePlaylist(int pageNumber, int pageSize) async {
     final url = Uri.parse('$baseUrl/all/genre?pageNumber=$pageNumber&pageSize=$pageSize');
     try {
-      final response = await http.get(url).timeout(const Duration(seconds: 5));
+      final response = await http.get(url).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         // Decode the JSON response
@@ -40,6 +40,9 @@ class PlaylistNetworkImpl extends PlaylistNetwork{
     } on TimeoutException {
       // Handle timeout errors
       throw Exception(Strings.timeout);
+    } catch (e) {
+      // Handle any other errors
+      throw Exception('An error occurred: $e');
     }
   }
 
@@ -47,7 +50,7 @@ class PlaylistNetworkImpl extends PlaylistNetwork{
   Future<PaginatedResponseDto> getSingerPlaylist(int pageNumber, int pageSize) async {
     final url = Uri.parse('$baseUrl/all/singer?pageNumber=$pageNumber&pageSize=$pageSize');
     try {
-      final response = await http.get(url).timeout(const Duration(seconds: 5));
+      final response = await http.get(url).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         // Decode the JSON response
@@ -71,6 +74,9 @@ class PlaylistNetworkImpl extends PlaylistNetwork{
     } on TimeoutException {
       // Handle timeout errors
       throw Exception(Strings.timeout);
+    } catch (e) {
+      // Handle any other errors
+      throw Exception('An error occurred: $e');
     }
   }
 
@@ -78,7 +84,7 @@ class PlaylistNetworkImpl extends PlaylistNetwork{
   Future<PlaylistDto> getPlaylistBySingerId(int singerId) async {
     final url = Uri.parse('$baseUrl/singer?singerId=$singerId');
     try {
-      final response = await http.get(url).timeout(const Duration(seconds: 5));
+      final response = await http.get(url).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
@@ -92,6 +98,9 @@ class PlaylistNetworkImpl extends PlaylistNetwork{
     } on TimeoutException {
       // Handle timeout errors
       throw Exception(Strings.timeout);
+    } catch (e) {
+      // Handle any other errors
+      throw Exception('An error occurred: $e');
     }
   }
 }

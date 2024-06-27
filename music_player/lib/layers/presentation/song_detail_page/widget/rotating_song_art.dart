@@ -30,12 +30,12 @@ class _RotatingSongArtState extends State<RotatingSongArt> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    final pageManager = Provider.of<AudioManager>(context, listen: false);
+    final audioManager = Provider.of<AudioManager>(context, listen: false);
     return ValueListenableBuilder<String>(
-      valueListenable: pageManager.currentSongArtNotifier,
+      valueListenable: audioManager.songArtNotifier,
       builder: (_, link, __) {
         return ValueListenableBuilder<ButtonState>(
-          valueListenable: pageManager.playButtonNotifier,
+          valueListenable: audioManager.playButtonNotifier,
           builder: (context, buttonState, child) {
             if (buttonState == ButtonState.playing) {
               _controller.repeat();

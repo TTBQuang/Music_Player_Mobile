@@ -1,7 +1,11 @@
 import '../../domain/entity/singer.dart';
 
-class SingerDto extends Singer{
-  SingerDto({required super.id, required super.name, required super.image});
+class SingerDto {
+  int id;
+  String name;
+  String image;
+
+  SingerDto({required this.id, required this.name, required this.image});
 
   factory SingerDto.fromJson(Map<String, dynamic> json) {
     return SingerDto(

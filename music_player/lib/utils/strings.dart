@@ -21,6 +21,7 @@ class Strings {
   static const String library = 'Thư viện';
   static const String loseNetworkConnection = 'Mất kết nối internet';
   static const String update = 'Cập nhật';
+  static const String delete = 'Xóa';
   static const String displayName = 'Tên hiển thị';
   static const String updateFail = 'Cập nhật thất bại';
   static const String newRelease = 'Mới phát hành';
@@ -28,10 +29,11 @@ class Strings {
   static const String popular = 'Nổi bật';
   static const String genre = 'Thể loại';
   static const String singer = 'Nghệ sĩ';
-  static const String errorHappen = 'Đã có lỗi xảy ra';
   static const String comment = 'Bình luận';
   static const String addToFavorites = 'Thêm vào yêu thích';
+  static const String removeFromFavorites = 'Bỏ khỏi yêu thích';
   static const String download = 'Tải xuống';
+  static const String seeComment = 'Xem bình luận';
   static const String searchHint = 'Tìm kiếm bài hát, nghệ sĩ,...';
   static const String recentlySearch = 'Gần đây';
   static const String song = 'Bài hát';
@@ -39,7 +41,7 @@ class Strings {
   static const String playRandomly = 'Phát ngẫu nhiên';
   static const String playSequentially = 'Phát theo thứ tự';
   static const String repeat = 'Lặp lại';
-  static const String savedSong = 'Nhạc đã lưu';
+  static const String favoriteSong = 'Nhạc yêu thích';
   static const String downloadedSong = 'Nhạc đã tải';
   static const String goToSetting = 'Đi đến Cài đặt';
   static const String explainPermissionTitle = 'Cấp quyền truy cập';
@@ -53,4 +55,9 @@ class Strings {
   static const String downloadingNotification = 'Đang download file';
   static const String downloadSuccessNotification = 'Download thành công file';
   static const String downloadFailNotification = 'Download thất bại file';
+  static const String requireLogin = 'Vui lòng đăng nhập để sử dụng chức năng này';
+  static const String noFavoriteSongs = 'Không có bài hát yêu thích nào';
+  static const String hasNoComment = 'Không có bình luận nào';
+  static const String enterComment = 'Nhập bình luận';
+  static const String response = 'Phản hồi';
 }

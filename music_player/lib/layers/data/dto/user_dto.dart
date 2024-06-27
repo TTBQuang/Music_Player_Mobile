@@ -2,8 +2,17 @@ import 'dart:convert';
 
 import 'package:music_player/layers/domain/entity/user.dart';
 
-class UserDto extends User{
-  UserDto({required super.id, required super.username, required super.password, required super.displayName, required super.authority});
+class UserDto {
+  int id;
+  String username;
+  String password;
+  String displayName;
+
+  UserDto(
+      {required this.id,
+      required this.username,
+      required this.password,
+      required this.displayName});
 
   factory UserDto.fromJson(Map<String, dynamic> json) {
     return UserDto(
@@ -11,7 +20,6 @@ class UserDto extends User{
       username: json['username'],
       password: json['password'],
       displayName: json['display_name'],
-      authority: json['authority'],
     );
   }
 
@@ -21,7 +29,6 @@ class UserDto extends User{
       'username': username,
       'password': password,
       'display_name': displayName,
-      'authority': authority,
     };
   }
 
@@ -31,7 +38,6 @@ class UserDto extends User{
       username: user.username,
       password: user.password,
       displayName: user.displayName,
-      authority: user.authority,
     );
   }
 }

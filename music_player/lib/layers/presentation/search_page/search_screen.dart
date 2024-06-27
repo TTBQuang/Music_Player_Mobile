@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:music_player/layers/data/dto/singer_dto.dart';
+import 'package:music_player/layers/data/dto/song_dto.dart';
 import 'package:music_player/layers/domain/entity/playlist.dart';
 import 'package:music_player/layers/presentation/base_screen.dart';
 import 'package:music_player/layers/presentation/login_page/login_viewmodel.dart';
@@ -142,6 +144,7 @@ class SearchSongState extends State<SearchSongScreen> {
                                             pageNumber = 1;
                                           });
 
+                                          // get items list base on search type (song or singer)
                                           viewModel.getItemByName(
                                               SearchType.values[selectedIndex],
                                               _textEditingController.text,
@@ -158,42 +161,54 @@ class SearchSongState extends State<SearchSongScreen> {
                         SliverPadding(
                           padding: const EdgeInsets.only(top: 10),
                           sliver: SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final item = viewModel.items[index];
-                              return Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: item is Song
-                                    ? HorizontalSongItem(
-                                        song: item,
-                                        isPlaying: false,
-                                        onItemClick: () {
-                                          Navigator.of(context).push(
-                                              SongDetailScreen.route(song: item, playlist: null));
-                                        },
-                                      )
-                                    : item is Singer
-                                        ? HorizontalSingerItem(
-                                            singer: item,
-                                            onItemClick: () async {
-                                              // call api to get playlist base in singerId
-                                              // then navigate to PlaylistDetailScreen
-                                              Playlist playlist =
-                                                  await viewModel
-                                                      .getPlaylistBySingerId(
-                                                          item.id);
-                                              if (context.mounted) {
-                                                Navigator.of(context).push(
-                                                    PlaylistDetailScreen.route(
-                                                        playlist));
-                                              }
-                                            },
-                                          )
-                                        : null, // In case the item is neither Song nor Singer
-                              );
-                            },
-                            childCount: viewModel.items.length,
-                          )),
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                final item = viewModel.items[index];
+                                return Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Builder(
+                                    builder: (context) {
+                                      if (item is SongDto) {
+                                        Song song = Song.fromSongDto(item, user?.id);
+                                        return HorizontalSongItem(
+                                          song: song,
+                                          isPlaying: false,
+                                          onItemClick: () {
+                                            Navigator.of(context).push(
+                                              SongDetailScreen.route(
+                                                  song: song, playlist: null),
+                                            );
+                                          },
+                                        );
+                                      } else if (item is SingerDto) {
+                                        Singer singer =
+                                            Singer.fromSingerDto(item);
+                                        return HorizontalSingerItem(
+                                          singer: singer,
+                                          onItemClick: () async {
+                                            // Call API to get playlist based on singerId
+                                            Playlist playlist = await viewModel
+                                                .getPlaylistBySingerId(
+                                                    singer.id);
+                                            if (context.mounted) {
+                                              Navigator.of(context).push(
+                                                PlaylistDetailScreen.route(
+                                                    playlist),
+                                              );
+                                            }
+                                          },
+                                        );
+                                      } else {
+                                        // Handle other item types or return an empty container
+                                        return Container();
+                                      }
+                                    },
+                                  ),
+                                );
+                              },
+                              childCount: viewModel.items.length,
+                            ),
+                          ),
                         ),
                         SliverFillRemaining(
                           hasScrollBody: false,

@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:media_store_plus/media_store_plus.dart';
+import 'package:music_player/layers/data/repository/comment_repository_impl.dart';
 import 'package:music_player/layers/data/repository/listen_history_repository_impl.dart';
 import 'package:music_player/layers/data/repository/playlist_repository_impl.dart';
 import 'package:music_player/layers/data/repository/search_history_repository_impl.dart';
 import 'package:music_player/layers/data/repository/singer_repository_impl.dart';
 import 'package:music_player/layers/data/repository/song_repository_impl.dart';
 import 'package:music_player/layers/data/source/local/user_local_storage_impl.dart';
+import 'package:music_player/layers/data/source/network/comment_network_impl.dart';
 import 'package:music_player/layers/data/source/network/listen_history_network_impl.dart';
 import 'package:music_player/layers/data/source/network/playlist_network_impl.dart';
 import 'package:music_player/layers/data/source/network/search_history_network_impl.dart';
@@ -69,6 +71,7 @@ Future<void> main() async {
   final searchHistoryNetwork = SearchHistoryNetworkImpl();
   final singerNetwork = SingerNetworkImpl();
   final listenHistoryNetwork = ListenHistoryNetworkImpl();
+  final commentNetwork = CommentNetworkImpl();
 
   final userRepository = UserRepositoryImpl(userNetwork, userLocalStorage);
   final songRepository = SongRepositoryImpl(songNetwork);
@@ -78,6 +81,7 @@ Future<void> main() async {
   final singerRepository = SingerRepositoryImpl(singerNetwork);
   final listenHistoryRepository =
       ListenHistoryRepositoryImpl(listenHistoryNetwork);
+  final commentRepository = CommentRepositoryImpl(commentNetwork);
 
   final PlaylistFactory listFactory = PlaylistFactory(
       songRepository: songRepository, playlistRepository: playlistRepository);
@@ -85,15 +89,14 @@ Future<void> main() async {
   final signUpViewModel = SignUpViewModel(userRepository);
   final loginViewModel = LoginViewModel(userRepository);
   final mainViewModel = MainViewModel(
-      userRepository: userRepository,
-      songRepository: songRepository,
-      playlistRepository: playlistRepository);
+      userRepository: userRepository, songRepository: songRepository);
   final playlistDetailViewModel =
       PlaylistDetailViewModel(songRepository: songRepository);
   final allItemViewModel = AllItemViewModel(listFactory);
   final songDetailViewModel = SongDetailViewModel(
       songRepository: songRepository,
-      listenHistoryRepository: listenHistoryRepository);
+      listenHistoryRepository: listenHistoryRepository,
+      commentRepository: commentRepository);
   final searchViewModel = SearchViewModel(
       songRepository: songRepository,
       searchHistoryRepository: searchHistoryRepository,

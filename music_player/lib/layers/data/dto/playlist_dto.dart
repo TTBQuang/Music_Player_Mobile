@@ -1,11 +1,16 @@
 import '../../domain/entity/playlist.dart';
 
-class PlaylistDto extends Playlist {
+class PlaylistDto {
+  int id;
+  String name;
+  String image;
+  int totalItems;
+
   PlaylistDto({
-    required super.id,
-    required super.name,
-    required super.image,
-    required super.totalItems,
+    required this.id,
+    required this.name,
+    required this.image,
+    required this.totalItems,
   });
 
   factory PlaylistDto.fromJson(Map<String, dynamic> json) {

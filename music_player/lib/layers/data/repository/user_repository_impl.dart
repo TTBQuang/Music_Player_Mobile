@@ -1,3 +1,4 @@
+import 'package:music_player/layers/data/dto/user_dto.dart';
 import 'package:music_player/layers/data/source/network/user_network.dart';
 
 import '../../domain/entity/user.dart';
@@ -17,7 +18,8 @@ class UserRepositoryImpl extends UserRepository{
 
   @override
   Future<User> login(String username, String password) async {
-    return await userNetwork.login(username, password);
+    UserDto userDto = await userNetwork.login(username, password);
+    return User.fromUserDto(userDto);
   }
 
   @override

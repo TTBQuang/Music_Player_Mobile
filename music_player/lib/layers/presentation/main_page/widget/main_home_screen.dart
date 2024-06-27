@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:music_player/layers/data/dto/playlist_dto.dart';
 import 'package:music_player/layers/domain/entity/paginated_response.dart';
 import 'package:music_player/layers/presentation/all_item_page/all_item_screen.dart';
 import 'package:music_player/layers/presentation/base_screen.dart';
@@ -10,6 +11,7 @@ import 'package:music_player/utils/size_config.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../utils/playlist_factory.dart';
+import '../../../data/dto/song_dto.dart';
 import '../../../domain/entity/playlist.dart';
 import '../../../domain/entity/song.dart';
 import '../../../domain/entity/user.dart';
@@ -34,6 +36,7 @@ class _MainHomeState extends State<MainHomeScreen> {
   Future<PaginatedResponse>? responseSingerPlaylist;
   User? user;
 
+  // reload recently listen songs list
   Future<void> _refresh() async {
     responseListenRecentlySong = listFactory?.getList(
         playListType: PlayListType.listenRecentlySong,
@@ -47,8 +50,10 @@ class _MainHomeState extends State<MainHomeScreen> {
   @override
   Widget build(BuildContext context) {
     LoginViewModel loginViewModel = Provider.of<LoginViewModel>(context);
+
     user = loginViewModel.user;
 
+    // load song lists
     listFactory = Provider.of<PlaylistFactory>(context, listen: false);
     responseListenRecentlySong = listFactory?.getList(
         playListType: PlayListType.listenRecentlySong,
@@ -98,6 +103,7 @@ class _MainHomeState extends State<MainHomeScreen> {
         )));
   }
 
+  // build UI of title and a list
   Widget _buildList(
       Future<PaginatedResponse> futureResponse, PlayListType playListType) {
     return FutureBuilder<PaginatedResponse>(
@@ -149,12 +155,14 @@ class _MainHomeState extends State<MainHomeScreen> {
                       itemCount: response.items.length,
                       itemBuilder: (context, index) {
                         dynamic item = response.items[index];
-                        if (item is Song) {
+                        if (item is SongDto) {
+                          Song song = Song.fromSongDto(item, user?.id);
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: VerticalSongItem(
-                              song: item,
+                              song: song,
                               onItemClick: () async {
+                                // get full playlist of current PlaylistType to use in SongDetailScreen
                                 Playlist? playlist = await listFactory
                                     ?.getPlaylistByPlayListType(
                                         playListType, user?.id);
@@ -162,19 +170,20 @@ class _MainHomeState extends State<MainHomeScreen> {
                                 if (context.mounted) {
                                   Navigator.of(context).push(
                                       SongDetailScreen.route(
-                                          song: item, playlist: playlist));
+                                          song: song, playlist: playlist));
                                 }
                               },
                             ),
                           );
-                        } else if (item is Playlist) {
+                        } else if (item is PlaylistDto) {
+                          Playlist playlist = Playlist.fromPlaylistDto(item);
                           return Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: PlaylistItem(
-                                playlist: item,
+                                playlist: playlist,
                                 onItemClick: () {
-                                  Navigator.of(context)
-                                      .push(PlaylistDetailScreen.route(item));
+                                  Navigator.of(context).push(
+                                      PlaylistDetailScreen.route(playlist));
                                 }),
                           );
                         }

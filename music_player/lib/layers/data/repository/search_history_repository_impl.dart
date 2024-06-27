@@ -11,8 +11,15 @@ class SearchHistoryRepositoryImpl extends SearchHistoryRepository {
 
   @override
   Future<List<SearchHistory>> getSearchHistory(
-      int userId, int pageNumber, int pageSize) {
-    return searchHistoryNetwork.getSearchHistory(userId, pageNumber, pageSize);
+      int userId, int pageNumber, int pageSize) async {
+    List<SearchHistoryDto> list = await searchHistoryNetwork.getSearchHistory(
+        userId, pageNumber, pageSize);
+    // convert to List<SearchHistory>
+    List<SearchHistory> result = [];
+    for (SearchHistoryDto searchHistoryDto in list) {
+      result.add(SearchHistory.fromPlaylistDto(searchHistoryDto));
+    }
+    return result;
   }
 
   @override

@@ -11,9 +11,9 @@ class PlayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pageManager = Provider.of<AudioManager>(context, listen: false);
+    final audioManager = Provider.of<AudioManager>(context, listen: false);
     return ValueListenableBuilder<ButtonState>(
-      valueListenable: pageManager.playButtonNotifier,
+      valueListenable: audioManager.playButtonNotifier,
       builder: (_, value, __) {
         switch (value) {
           case ButtonState.loading:
@@ -23,14 +23,14 @@ class PlayButton extends StatelessWidget {
               icon: const Icon(Icons.play_arrow),
               color: Colors.white,
               iconSize: iconSize,
-              onPressed: pageManager.play,
+              onPressed: audioManager.play,
             );
           case ButtonState.playing:
             return IconButton(
               color: Colors.white,
               icon: const Icon(Icons.pause),
               iconSize: iconSize,
-              onPressed: pageManager.pause,
+              onPressed: audioManager.pause,
             );
         }
       },

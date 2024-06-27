@@ -109,15 +109,17 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                                     padding: const EdgeInsets.all(10),
                                     child: ValueListenableBuilder<int>(
                                       valueListenable:
-                                          audioManager.currentPlaylistIdNotifier,
+                                          audioManager.playlistIdNotifier,
                                       builder: (_, playlistId, __) {
                                         return ValueListenableBuilder(
-                                            valueListenable: audioManager
-                                                .currentSongIdNotifier,
+                                            valueListenable:
+                                                audioManager.songIdNotifier,
                                             builder: (_, songId, __) {
                                               return HorizontalSongItem(
                                                 song: song,
-                                                isPlaying: (songId == song.id && playlistId == viewModel.playlist?.id),
+                                                isPlaying: (songId == song.id &&
+                                                    playlistId ==
+                                                        viewModel.playlist?.id),
                                                 onItemClick: () {
                                                   Navigator.of(context).push(
                                                       SongDetailScreen.route(
@@ -145,12 +147,14 @@ class _PlaylistDetailState extends State<PlaylistDetailScreen> {
                             children: [
                               NavigationBottomBar(
                                   onPrevClick: () {
+                                    // navigate to previous page
                                     if (pageNumber > 1) {
                                       pageNumber--;
                                       viewModel.fetchNewPage(pageNumber);
                                     }
                                   },
                                   onNextClick: () {
+                                    // navigate to next page
                                     if (pageNumber < maxPage) {
                                       pageNumber++;
                                       viewModel.fetchNewPage(pageNumber);

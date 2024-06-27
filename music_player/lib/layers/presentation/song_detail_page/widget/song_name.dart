@@ -10,9 +10,9 @@ class SongName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pageManager = Provider.of<AudioManager>(context, listen: false);
+    final audioManager = Provider.of<AudioManager>(context, listen: false);
     return ValueListenableBuilder<String>(
-      valueListenable: pageManager.currentSongNameNotifier,
+      valueListenable: audioManager.songNameNotifier,
       builder: (_, title, __) {
         return Text(title,
             style: TextStyle(

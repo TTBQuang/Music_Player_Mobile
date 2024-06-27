@@ -26,6 +26,9 @@ class _InitialScreenState extends State<InitialScreen> {
   Future<void> _initialize() async {
     final loginViewModel = context.read<LoginViewModel>();
 
+    // check whether user saved credential or not
+    // if user saved, login and navigate to main screen
+    // if not, navigate to login scrren
     loginViewModel.getCredentials().then((data) {
       if (data['username'] != null && data['password'] != null) {
         loginViewModel.login(data['username']!, data['password']!).then((user) {

@@ -1,3 +1,4 @@
+import 'package:music_player/layers/data/dto/playlist_dto.dart';
 import 'package:music_player/layers/domain/entity/song.dart';
 
 class Playlist {
@@ -22,5 +23,14 @@ class Playlist {
       image: image,
       totalItems: totalItems,
     )..songList = List<Song>.from(songList);
+  }
+
+  factory Playlist.fromPlaylistDto(PlaylistDto playlistDto) {
+    return Playlist(
+      id: playlistDto.id,
+      name: playlistDto.name,
+      image: playlistDto.image,
+      totalItems: playlistDto.totalItems,
+    );
   }
 }

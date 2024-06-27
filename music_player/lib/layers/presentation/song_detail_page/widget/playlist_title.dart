@@ -8,9 +8,9 @@ class PlaylistTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pageManager = Provider.of<AudioManager>(context, listen: false);
+    final audioManager = Provider.of<AudioManager>(context, listen: false);
     return ValueListenableBuilder<String>(
-      valueListenable: pageManager.currentPlaylistTitleNotifier,
+      valueListenable: audioManager.playlistTitleNotifier,
       builder: (_, title, __) {
         return title.isNotEmpty
             ? Text(
