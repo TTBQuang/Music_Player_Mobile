@@ -17,7 +17,11 @@ This is a mobile application that allows users to listen to, search for, save, d
 ## Demo
 Demo: https://www.youtube.com/watch?v=zfhSiDr6yTs
 
-## Notes
+## How to run
+- Start the back-end server by following the guide in this repository: https://github.com/TTBQuang/Music_Player_BE
+- Run this app in Android studio
+
+## Note
 Some features, especially those related to notifications, downloading, and MP3 files on the device, may not work correctly on iOS devices because I have only developed and tested the app's functionalities on Android devices
 
 __Thanks for reading!__
