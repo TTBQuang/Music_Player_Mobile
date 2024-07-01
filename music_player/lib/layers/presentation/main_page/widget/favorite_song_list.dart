@@ -137,7 +137,8 @@ class _FavoriteSongListState extends State<FavoriteSongList> {
   }
 
   // create a playlist contain all favorite song, then navigate to SongDetailScreen
-  void _navigateToSongDetailScreen(BuildContext context, int index) {
+  Future<void> _navigateToSongDetailScreen(
+      BuildContext context, int index) async {
     playlist = Playlist(
       id: Constants.favoriteSongsPlaylistId,
       name: Strings.favoriteSong,
@@ -149,7 +150,10 @@ class _FavoriteSongListState extends State<FavoriteSongList> {
       playlist?.songList.add(song);
     }
 
-    Navigator.of(context)
+    await Navigator.of(context)
         .push(SongDetailScreen.route(song: _songs[index], playlist: playlist));
+
+    _loadFavoriteSongs();
+    setState(() {});
   }
 }

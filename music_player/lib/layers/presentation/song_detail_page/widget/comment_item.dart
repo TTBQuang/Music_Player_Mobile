@@ -102,7 +102,10 @@ class CommentItem extends StatelessWidget {
                           padding: EdgeInsets.only(
                             top: shouldShowResponseIcon ? 0 : 10,
                           ),
-                          child: Text(comment.numberOfUsersLiked.toString()),
+                          child: Text(
+                            comment.numberOfUsersLiked.toString(),
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ),
                         if (shouldShowResponseIcon)
                           IconButton(
