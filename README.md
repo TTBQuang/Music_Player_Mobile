@@ -15,7 +15,7 @@ This is a mobile application that allows users to listen to, search for, save, d
 - Comment in a song; like, delete, update comments
 
 ## Demo
-Demo: https://www.youtube.com/watch?v=zfhSiDr6yTs
+Demo: [https://www.youtube.com/watch?v=zfhSiDr6yTs](https://youtu.be/FapAOkS7XZ4)
 
 ## How to run
 - Start the back-end server by following the guide in this repository: https://github.com/TTBQuang/Music_Player_BE
