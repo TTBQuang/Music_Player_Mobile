@@ -9,7 +9,7 @@ This is a mobile application that allows users to listen to, search for, save, d
 - Manage the currently playing song through notification
 - Search for a song or singer
 - Save listening and search history of users
-- Save a song
+- Save a song to favorites
 - Download a song
 - Listen to and delete all MP3 files on devices
 - Comment in a song; like, delete, update comments
