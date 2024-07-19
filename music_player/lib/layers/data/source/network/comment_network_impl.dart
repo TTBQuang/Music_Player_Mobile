@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 import '../../../../utils/strings.dart';
 
 class CommentNetworkImpl extends CommentNetwork {
-  final String baseUrl = 'http://192.168.1.11:8080/comment';
+  final String baseUrl = 'http://192.168.1.13:8080/comment';
 
   @override
   Future<List<CommentDto>> getAllComments(int songId) async {

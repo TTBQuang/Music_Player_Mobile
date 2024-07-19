@@ -7,12 +7,14 @@ class UserDto {
   String username;
   String password;
   String displayName;
+  String role;
 
   UserDto(
       {required this.id,
       required this.username,
       required this.password,
-      required this.displayName});
+      required this.displayName,
+        required this.role});
 
   factory UserDto.fromJson(Map<String, dynamic> json) {
     return UserDto(
@@ -20,6 +22,7 @@ class UserDto {
       username: json['username'],
       password: json['password'],
       displayName: json['display_name'],
+      role: json['role']
     );
   }
 
@@ -29,6 +32,7 @@ class UserDto {
       'username': username,
       'password': password,
       'display_name': displayName,
+      'role': role,
     };
   }
 
@@ -38,6 +42,7 @@ class UserDto {
       username: user.username,
       password: user.password,
       displayName: user.displayName,
+      role: user.role,
     );
   }
 }

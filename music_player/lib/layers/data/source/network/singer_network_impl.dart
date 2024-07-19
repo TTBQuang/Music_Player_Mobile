@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 import '../../../../utils/strings.dart';
 
 class SingerNetworkImpl extends SingerNetwork{
-  final String baseUrl = 'http://192.168.1.11:8080/singer';
+  final String baseUrl = 'http://192.168.1.13:8080/singer';
 
   @override
   Future<PaginatedResponseDto> getSingerByName(String name, int pageNumber, int pageSize) async {
@@ -31,6 +31,30 @@ class SingerNetworkImpl extends SingerNetwork{
 
         // Create PaginatedResponseDto with the mapped items and totalItems
         return PaginatedResponseDto(items: singerDtoList, totalItems: totalItems);
+      } else {
+        throw Exception('${Strings.errorOccurred}: ${response.statusCode}');
+      }
+    } on SocketException {
+      // Handle network errors
+      throw Exception(Strings.cannotConnectServer);
+    } on TimeoutException {
+      // Handle timeout errors
+      throw Exception(Strings.timeout);
+    } catch (e) {
+      // Handle any other errors
+      throw Exception('An error occurred: $e');
+    }
+  }
+
+  @override
+  Future<List<SingerDto>> getAllSingers() async {
+    try {
+      final url = Uri.parse('$baseUrl/get_all');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+        return jsonResponse.map((singer) => SingerDto.fromJson(singer)).toList();
       } else {
         throw Exception('${Strings.errorOccurred}: ${response.statusCode}');
       }

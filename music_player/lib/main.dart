@@ -6,13 +6,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:media_store_plus/media_store_plus.dart';
 import 'package:music_player/layers/data/repository/comment_repository_impl.dart';
+import 'package:music_player/layers/data/repository/genre_repository_impl.dart';
 import 'package:music_player/layers/data/repository/listen_history_repository_impl.dart';
 import 'package:music_player/layers/data/repository/playlist_repository_impl.dart';
 import 'package:music_player/layers/data/repository/search_history_repository_impl.dart';
 import 'package:music_player/layers/data/repository/singer_repository_impl.dart';
 import 'package:music_player/layers/data/repository/song_repository_impl.dart';
+import 'package:music_player/layers/data/source/firebase/song_upload_impl.dart';
 import 'package:music_player/layers/data/source/local/user_local_storage_impl.dart';
 import 'package:music_player/layers/data/source/network/comment_network_impl.dart';
+import 'package:music_player/layers/data/source/network/genre_network_impl.dart';
 import 'package:music_player/layers/data/source/network/listen_history_network_impl.dart';
 import 'package:music_player/layers/data/source/network/playlist_network_impl.dart';
 import 'package:music_player/layers/data/source/network/search_history_network_impl.dart';
@@ -72,9 +75,11 @@ Future<void> main() async {
   final singerNetwork = SingerNetworkImpl();
   final listenHistoryNetwork = ListenHistoryNetworkImpl();
   final commentNetwork = CommentNetworkImpl();
+  final genreNetwork = GenreNetworkImpl();
+  final songUpload = SongUploadImpl();
 
   final userRepository = UserRepositoryImpl(userNetwork, userLocalStorage);
-  final songRepository = SongRepositoryImpl(songNetwork);
+  final songRepository = SongRepositoryImpl(songNetwork: songNetwork, songUpload: songUpload);
   final playlistRepository = PlaylistRepositoryImpl(playlistNetwork);
   final searchHistoryRepository =
       SearchHistoryRepositoryImpl(searchHistoryNetwork);
@@ -82,6 +87,7 @@ Future<void> main() async {
   final listenHistoryRepository =
       ListenHistoryRepositoryImpl(listenHistoryNetwork);
   final commentRepository = CommentRepositoryImpl(commentNetwork);
+  final genreRepository = GenreRepositoryImpl(genreNetwork);
 
   final PlaylistFactory listFactory = PlaylistFactory(
       songRepository: songRepository, playlistRepository: playlistRepository);
@@ -89,7 +95,10 @@ Future<void> main() async {
   final signUpViewModel = SignUpViewModel(userRepository);
   final loginViewModel = LoginViewModel(userRepository);
   final mainViewModel = MainViewModel(
-      userRepository: userRepository, songRepository: songRepository);
+      userRepository: userRepository,
+      songRepository: songRepository,
+      singerRepository: singerRepository,
+      genreRepository: genreRepository);
   final playlistDetailViewModel =
       PlaylistDetailViewModel(songRepository: songRepository);
   final allItemViewModel = AllItemViewModel(listFactory);

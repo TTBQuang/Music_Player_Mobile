@@ -1,5 +1,6 @@
 import 'package:music_player/layers/data/dto/paginated_response_dto.dart';
 import 'package:music_player/layers/data/dto/song_dto.dart';
+import 'package:music_player/layers/data/dto/uploaded_song_dto.dart';
 
 abstract class SongNetwork{
   Future<PaginatedResponseDto> getNewSongs(int pageNumber, int pageSize);
@@ -13,4 +14,5 @@ abstract class SongNetwork{
   Future<void> saveSong(int userId, int songId);
   Future<void> removeSongFromFavorite(int userId, int songId);
   Future<List<SongDto>> getFavoriteSongs(int userId);
+  Future<bool> uploadSong(UploadedSongDto uploadedSong);
 }

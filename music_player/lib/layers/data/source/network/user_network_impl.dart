@@ -10,7 +10,7 @@ import '../../../../utils/strings.dart';
 import '../../../domain/entity/user.dart';
 
 class UserNetworkImpl implements UserNetwork {
-  final String baseUrl = 'http://192.168.1.11:8080/user';
+  final String baseUrl = 'http://192.168.1.13:8080/user';
 
   @override
   Future<bool> registerUser(String username, String password) async {

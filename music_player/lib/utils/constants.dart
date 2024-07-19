@@ -15,6 +15,7 @@ class Constants{
   static const String usernameKey = "USERNAME";
   static const String passwordKey = "PASSWORD";
   static const String channelKey = 'Music Player channel';
+  static const String adminRole = "admin";
 
   static const int downloadOption = 0;
   static const int saveFavoriteOption = 1;

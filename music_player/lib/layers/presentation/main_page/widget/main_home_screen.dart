@@ -36,25 +36,7 @@ class _MainHomeState extends State<MainHomeScreen> {
   Future<PaginatedResponse>? responseSingerPlaylist;
   User? user;
 
-  // reload recently listen songs list
-  Future<void> _refresh() async {
-    responseListenRecentlySong = listFactory?.getList(
-        playListType: PlayListType.listenRecentlySong,
-        pageNumber: 0,
-        pageSize: Constants.pageSizeMainHomeView,
-        userId: user?.id);
-
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    LoginViewModel loginViewModel = Provider.of<LoginViewModel>(context);
-
-    user = loginViewModel.user;
-
-    // load song lists
-    listFactory = Provider.of<PlaylistFactory>(context, listen: false);
+  void loadPlaylists() {
     responseListenRecentlySong = listFactory?.getList(
         playListType: PlayListType.listenRecentlySong,
         pageNumber: 0,
@@ -80,6 +62,23 @@ class _MainHomeState extends State<MainHomeScreen> {
         pageNumber: 0,
         pageSize: Constants.pageSizeMainHomeView,
         userId: user?.id);
+  }
+
+  // reload recently listen songs list
+  Future<void> _refresh() async {
+    loadPlaylists();
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    LoginViewModel loginViewModel = Provider.of<LoginViewModel>(context);
+
+    user = loginViewModel.user;
+
+    // load song lists
+    listFactory = Provider.of<PlaylistFactory>(context, listen: false);
+    loadPlaylists();
 
     return BaseScreen(() => RefreshIndicator(
         onRefresh: _refresh,

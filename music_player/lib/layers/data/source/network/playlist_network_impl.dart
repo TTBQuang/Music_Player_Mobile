@@ -10,7 +10,7 @@ import '../../../../utils/strings.dart';
 import '../../dto/paginated_response_dto.dart';
 
 class PlaylistNetworkImpl extends PlaylistNetwork{
-  final String baseUrl = 'http://192.168.1.11:8080/playlist';
+  final String baseUrl = 'http://192.168.1.13:8080/playlist';
 
   @override
   Future<PaginatedResponseDto> getGenrePlaylist(int pageNumber, int pageSize) async {

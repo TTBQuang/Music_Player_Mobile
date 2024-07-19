@@ -1,5 +1,6 @@
 import '../entity/paginated_response.dart';
 import '../entity/song.dart';
+import '../entity/uploaded_song.dart';
 
 abstract class SongRepository{
   Future<PaginatedResponse> getNewSongs(int pageNumber, int pageSize);
@@ -13,4 +14,6 @@ abstract class SongRepository{
   Future<void> saveSong(int songId, int userId);
   Future<void> removeSongFromFavorite(int songId, int userId);
   Future<List<Song>> getFavoriteSong(int userId);
+  Future<String> upload(String filePath, String destination);
+  Future<bool> uploadSong(UploadedSong uploadedSong);
 }

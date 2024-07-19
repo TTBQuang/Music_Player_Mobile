@@ -1,15 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'package:music_player/layers/data/dto/song_dto.dart';
+import 'package:music_player/layers/data/dto/uploaded_song_dto.dart';
 import 'package:music_player/layers/data/source/network/song_network.dart';
 
 import '../../../../utils/strings.dart';
 import '../../dto/paginated_response_dto.dart';
 
 class SongNetworkImpl extends SongNetwork {
-  final String baseUrl = 'http://192.168.1.11:8080/song';
+  final String baseUrl = 'http://192.168.1.13:8080/song';
 
   @override
   Future<PaginatedResponseDto> getNewSongs(int pageNumber, int pageSize) async {
@@ -265,7 +267,8 @@ class SongNetworkImpl extends SongNetwork {
   @override
   Future<void> removeSongFromFavorite(int userId, int songId) async {
     try {
-      final url = Uri.parse('$baseUrl/remove_from_save?userId=$userId&songId=$songId');
+      final url =
+          Uri.parse('$baseUrl/remove_from_save?userId=$userId&songId=$songId');
       await http.delete(url);
     } on SocketException {
       // Handle network errors
@@ -282,13 +285,12 @@ class SongNetworkImpl extends SongNetwork {
   @override
   Future<List<SongDto>> getFavoriteSongs(int userId) async {
     try {
-      final url = Uri.parse(
-          '$baseUrl/saved?userId=$userId');
+      final url = Uri.parse('$baseUrl/saved?userId=$userId');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
         List<dynamic> jsonResponse =
-        jsonDecode(utf8.decode(response.bodyBytes));
+            jsonDecode(utf8.decode(response.bodyBytes));
         return jsonResponse.map((song) => SongDto.fromJson(song)).toList();
       } else {
         throw Exception('${Strings.errorOccurred}: ${response.statusCode}');
@@ -302,6 +304,29 @@ class SongNetworkImpl extends SongNetwork {
     } catch (e) {
       // Handle any other errors
       throw Exception('An error occurred: $e');
+    }
+  }
+
+  @override
+  Future<bool> uploadSong(UploadedSongDto uploadedSong) async {
+    try {
+      final url = Uri.parse('$baseUrl/upload');
+
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(uploadedSong.toJson()),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
     }
   }
 }

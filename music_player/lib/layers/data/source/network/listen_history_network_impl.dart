@@ -7,7 +7,7 @@ import 'package:music_player/layers/data/dto/listen_history_dto.dart';
 import 'listen_history_network.dart';
 
 class ListenHistoryNetworkImpl extends ListenHistoryNetwork {
-  final String baseUrl = 'http://192.168.1.11:8080/listen_history';
+  final String baseUrl = 'http://192.168.1.13:8080/listen_history';
 
   @override
   Future<void> saveListenHistory(ListenHistoryDto listenHistory) async {

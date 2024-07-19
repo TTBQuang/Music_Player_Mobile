@@ -1,15 +1,19 @@
+import 'package:music_player/layers/data/dto/uploaded_song_dto.dart';
 import 'package:music_player/layers/data/source/network/song_network.dart';
 import 'package:music_player/layers/domain/entity/song.dart';
 import 'package:music_player/layers/domain/repository/song_repository.dart';
 
 import '../../domain/entity/paginated_response.dart';
+import '../../domain/entity/uploaded_song.dart';
 import '../dto/paginated_response_dto.dart';
 import '../dto/song_dto.dart';
+import '../source/firebase/song_upload.dart';
 
 class SongRepositoryImpl extends SongRepository {
   final SongNetwork songNetwork;
+  final SongUpload songUpload;
 
-  SongRepositoryImpl(this.songNetwork);
+  SongRepositoryImpl({required this.songNetwork, required this.songUpload});
 
   @override
   Future<PaginatedResponse> getNewSongs(int pageNumber, int pageSize) async {
@@ -91,5 +95,15 @@ class SongRepositoryImpl extends SongRepository {
       result.add(Song.fromSongDto(songDto, null));
     }
     return result;
+  }
+
+  @override
+  Future<String> upload(String filePath, String destination) async {
+    return await songUpload.upload(filePath, destination);
+  }
+
+  @override
+  Future<bool> uploadSong(UploadedSong uploadedSong) async {
+    return await songNetwork.uploadSong(UploadedSongDto.fromUploadedSong(uploadedSong));
   }
 }

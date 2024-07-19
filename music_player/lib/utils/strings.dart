@@ -60,4 +60,14 @@ class Strings {
   static const String hasNoComment = 'Không có bình luận nào';
   static const String enterComment = 'Nhập bình luận';
   static const String response = 'Phản hồi';
+  static const String uploadFail = 'Tải lên thất bại';
+  static const String requestFillAll = 'Vui lòng điền đầy đủ thông tin';
+  static const String addSong = 'Thêm bài hát';
+  static const String songName = 'Tên bài hát';
+  static const String chooseSinger = 'Chọn ca sĩ';
+  static const String chooseGenre = 'Chọn thể loại';
+  static const String choose = 'Chọn';
+  static const String image = 'Hình ảnh';
+  static const String addSuccessfully = 'Thêm thành công';
+  static const String addFailed = 'Thêm thất bại';
 }

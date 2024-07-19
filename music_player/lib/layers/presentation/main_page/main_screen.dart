@@ -5,8 +5,10 @@ import 'package:music_player/layers/presentation/main_page/main_viewmodel.dart';
 import 'package:music_player/layers/presentation/main_page/widget/library_screen.dart';
 import 'package:music_player/layers/presentation/main_page/widget/main_home_screen.dart';
 import 'package:music_player/layers/presentation/main_page/widget/profile_dialog.dart';
+import 'package:music_player/layers/presentation/main_page/widget/upload_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../../../utils/constants.dart';
 import '../../../utils/strings.dart';
 import '../login_page/login_screen.dart';
 import '../search_page/search_screen.dart';
@@ -34,6 +36,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = [
     const MainHomeScreen(),
     const LibraryScreen(),
+    const UploadScreen(),
   ];
 
   @override
@@ -81,15 +84,20 @@ class _MainScreenState extends State<MainScreen> {
           children: _pages,
         ),
         bottomNavigationBar: BottomNavigationBar(
-          items: const [
-            BottomNavigationBarItem(
+          items: [
+            const BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: Strings.home,
             ),
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(Icons.local_library),
               label: Strings.library,
             ),
+            if (loginViewModel.user?.role == Constants.adminRole)
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.upload),
+                label: Strings.addSong,
+              ),
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: Theme.of(context).colorScheme.tertiary,

@@ -5,12 +5,14 @@ class User {
   String username;
   String password;
   String displayName;
+  String role;
 
   User({
     required this.id,
     required this.username,
     required this.password,
     required this.displayName,
+    required this.role,
   });
 
   User clone() {
@@ -19,6 +21,7 @@ class User {
       username: username,
       displayName: displayName,
       password: password,
+      role: role
     );
   }
 
@@ -27,7 +30,8 @@ class User {
       id: userDto.id,
       username: userDto.username,
       password: userDto.password,
-      displayName: userDto.displayName
+      displayName: userDto.displayName,
+      role: userDto.role
     );
   }
 }
