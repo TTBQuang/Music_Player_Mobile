@@ -4,7 +4,7 @@
 This is a mobile application that allows users to listen to, search for, save, download, and comment on songs. Additionally, users can listen to and delete MP3 files on their devices
 
 ## Main features
-- Log in, log out, sign up
+- Log in (as a user or admin), log out, sign up
 - Supports three playback modes: repeat, sequential, and shuffle
 - Manage the currently playing song through notification
 - Search for a song or singer
@@ -13,9 +13,10 @@ This is a mobile application that allows users to listen to, search for, save, d
 - Download a song
 - Listen to and delete all MP3 files on devices
 - Comment in a song; like, delete, update comments
+- Allow admin to upload songs
 
 ## Demo
-Demo: [https://www.youtube.com/watch?v=zfhSiDr6yTs](https://youtu.be/FapAOkS7XZ4)
+Demo: https://youtu.be/8LPwZYdgnJU
 
 ## How to run
 - Start the back-end server by following the guide in this repository: https://github.com/TTBQuang/Music_Player_BE
