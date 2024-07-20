@@ -53,7 +53,6 @@ class FavoriteSongItem extends StatelessWidget {
           PopupMenuButton<int>(
             icon: const Icon(
               Icons.more_vert,
-              color: Colors.white,
             ),
             onSelected: (item) => _onSelected(context, item),
             itemBuilder: (context) => [
