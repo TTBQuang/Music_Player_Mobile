@@ -16,7 +16,7 @@ This is a mobile application that allows users to listen to, search for, save, d
 - Allow admin to upload songs
 
 ## Demo
-Demo: https://youtu.be/8LPwZYdgnJU
+Demo: [https://youtu.be/8LPwZYdgnJU](https://youtu.be/jb_so2KWJjg)
 
 ## How to run
 - Start the back-end server by following the guide in this repository: https://github.com/TTBQuang/Music_Player_BE
